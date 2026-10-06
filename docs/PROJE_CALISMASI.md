@@ -68,6 +68,14 @@ Bir bölüm yalnızca metin değildir. İçindeki formlar ve checklistler Modül
 
 ### İmza yöntemi
 
+Her doküman iki yolla imzalanabilir:
+
+1. **Telefonda dijital imza:** Personel okur, "okudum, anladım" kutusunu işaretler, parmağıyla imzalar.
+2. **Yazdır, kâğıda ıslak imza:** Dokümandaki **Yazdır** düğmesiyle A4 çıktı alınır (tek personel, imza bekleyen herkes için toplu veya boş form; isteğe bağlı personel + arşiv nüshası). Çıktıda personelin adı, sicil no, departmanı, imza alanları ve belgeye özel bir QR kod basılıdır. İmzalı kâğıt taranıp yüklenince sistem QR koddan kimin hangi dokümanı imzaladığını bulur, durumu "Islak imza" yapar.
+
+![Yazdırma önizlemesi](gorseller/yazdir-onizleme.png)
+
+
 - Telefonda "okudum, anladım" onayı ve parmakla imza; tarih, saat, cihaz ve IP bilgisi kaydedilir, imzalı PDF özlük dosyasına eklenir.
 - Bu yöntem iç talimat ve bilgilendirme belgeleri için uygundur.
 - İş sözleşmesi, ibraname gibi hukuki ağırlığı yüksek belgeler için ıslak imzalı kâğıt taranıp özlüğe yüklenir veya nitelikli elektronik imza kullanılır.
