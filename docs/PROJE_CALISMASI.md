@@ -28,7 +28,7 @@ Her rol yalnızca yetkisi olan veriyi görür. Personel kendi kaydını, müdür
 | **1. Personel ve İK** | Personel kayıtları, özlük dosyası (PDF çıktı), işe giriş ve çıkış süreci, lojman yerleşimi ve zimmet, izin talepleri |
 | **2. Mesai ve Vardiya** | QR ile giriş/çıkış, haftalık shift planı, gecikme ve fazla mesai hesabı, aylık puantaj ve bordroya aktarım |
 | **3. Doküman ve İmza** | Otel El Kitabı (20 bölüm), oryantasyon ve bilgilendirme formları, lojman talimatı, otel genel kuralları, versiyon ve yeniden imza takibi |
-| **4. Günlük Operasyon** | Günlük checklistler, vardiya teslimleri, oda kontrol sistemi, teknik arıza ve bakım, misafir şikâyetleri |
+| **4. Günlük Operasyon** | Günlük checklistler, vardiya teslimleri, misafir şikâyetleri |
 | **5. Eğitim ve Yetkinlik** | Zorunlu eğitim takibi (İSG, yangın, hijyen, KVKK), katılım tutanakları, yetkinlik puanı, süresi dolan sertifika uyarısı |
 | **6. Raporlama ve Denetim** | Günlük ve haftalık yönetici raporu, departman uyum skoru, iç denetim ve aksiyon takibi |
 
@@ -64,7 +64,7 @@ Doküman güncellendiğinde (ör. v2 → v3) ilgili personelden yeniden imza ist
 
 İşe giriş formları: Oryantasyon Formu, Bilgilendirme Formu, Lojman Talimatı, Otel Genel Kuralları, KVKK Aydınlatma ve Açık Rıza, İSG Eğitim Katılım Tutanağı, Zimmet Teslim Formu, Kıyafet ve Hijyen Talimatı.
 
-Bir bölüm yalnızca metin değildir. İçindeki formlar ve checklistler Modül 4'teki günlük kayıtlara bağlanır. Örneğin "Housekeeping Operasyonu" imzalanır, içindeki oda kontrol formu da her gün Oda Kontrol ekranında kullanılır.
+Bir bölüm yalnızca metin değildir. İçindeki formlar ve checklistler Modül 4'teki günlük kayıtlara bağlanır. Örneğin "Housekeeping Operasyonu" imzalanır, içindeki kat checklisti de her gün Günlük Checklist ekranında doldurulur.
 
 ### İmza yöntemi
 
@@ -113,16 +113,16 @@ Bir adım tamamlanmadan sonraki açılmaz (ör. oryantasyon formu imzalanmadan Q
 |---|---|
 | Günlük checklist | Her madde kimin, ne zaman işaretlediğiyle kaydedilir. Fotoğraf veya ölçüm (ör. soğuk oda °C) istenebilir. Saatinde tamamlanmayan liste yöneticiye düşer. |
 | Vardiya teslimi | Standart teslim formu. Teslim eden ve alan iki taraf onaylar. Açık işler bir sonraki vardiyaya görev olarak düşer. |
-| Oda kontrol | Kat görevlisi "temiz" işaretler, supervisor 25 maddelik formla onaylar. Bulunan arıza tek dokunuşla teknik servise iş emri olur. |
-| Teknik arıza | Her departman bildirir, teknik şef atar, teknisyen fotoğrafla kapatır. Önceliğe göre SLA izlenir. Periyodik bakımlar takvimden otomatik oluşur. |
 | Misafir şikâyeti | Kaynak, kategori, sorumlu departman ve telafi ile kaydedilir. Misafire geri dönüş yapılmadan kapanmaz. Tekrar eden konular aylık raporda kök neden analizine gider. |
 
-![Oda kontrol](gorseller/oda.png)
+> Oda durumu ve teknik arıza takibi bu platformun kapsamı dışındadır. "Oda ve Genel Otel Kalite Standardı" ile "Teknik, Bakım ve Tesis Yönetimi" bölümleri yalnızca imzalanacak doküman olarak yer alır.
+
+![Günlük checklist](gorseller/checklist.png)
 
 ## 8. Yönetici raporları
 
 Rapor sistemdeki kayıtlardan otomatik dolar; departman müdürü yalnızca yorum ve aksiyon ekleyip onaylar.
-Genel müdüre her sabah e-posta ile gider. Göstergeler: mesai uyumu, fazla mesai, checklist tamamlanma, arıza çözüm süresi, şikâyet sayısı, oda kontrol hata oranı, bekleyen imza.
+Genel müdüre her sabah e-posta ile gider. Göstergeler: mesai uyumu, fazla mesai, checklist tamamlanma, vardiya teslim onay oranı, şikâyet sayısı, zorunlu eğitim tamamlanma, bekleyen imza.
 
 ![Rapor](gorseller/rapor.png)
 
@@ -134,7 +134,7 @@ Genel müdüre her sabah e-posta ile gider. Göstergeler: mesai uyumu, fazla mes
 | Uygulama | Python Django | Rol bazlı yetki, Türkçe dil desteği, hazır yönetim paneli, form ağırlıklı işler için hızlı geliştirme |
 | Veritabanı | PostgreSQL | Güvenilir, ilişkisel kayıtlar ve raporlama |
 | Dosya arşivi | S3 uyumlu depolama | İmzalı PDF'ler, evrak taramaları, fotoğraflar |
-| Bildirim | E-posta, SMS / WhatsApp | Hatırlatma, gecikme ve SLA uyarıları |
+| Bildirim | E-posta, SMS / WhatsApp | İmza hatırlatması, gecikme ve süresi dolan belge uyarıları |
 | Entegrasyon | Excel/CSV, ileride API | Bordro programı ve PMS'e aktarım |
 
 ### KVKK
@@ -150,7 +150,7 @@ Genel müdüre her sabah e-posta ile gider. Göstergeler: mesai uyumu, fazla mes
 |---|---|---|
 | Faz 1 · Temel | ~4 hafta | Personel kaydı ve özlük, doküman ve imza (20 bölüm + formlar), QR mesai ve kiosk, rol ve yetkiler |
 | Faz 2 · Vardiya | ~3 hafta | Haftalık shift planı, puantaj ve bordro aktarımı, işe giriş/çıkış süreci, lojman |
-| Faz 3 · Operasyon | ~4 hafta | Checklistler, vardiya teslim, oda kontrol, teknik arıza, misafir şikâyeti |
+| Faz 3 · Operasyon | ~3 hafta | Günlük checklistler, vardiya teslim, misafir şikâyeti |
 | Faz 4 · Raporlama | ~3 hafta | Eğitim ve yetkinlik, yönetici raporları, iç denetim, PMS entegrasyonu (isteğe bağlı) |
 
 ## 11. Netleştirilmesi gerekenler

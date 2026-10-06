@@ -199,17 +199,6 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
 .cl-item.done span.t{color:var(--muted);text-decoration:line-through}
 .cl-item .by{margin-left:auto;font-size:.74rem;color:var(--muted);font-family:var(--f-mono);white-space:nowrap}
 
-/* Oda */
-.floors{display:flex;flex-direction:column;gap:10px}
-.floor{display:flex;gap:10px;align-items:center}
-.floor>span{width:48px;flex:none;font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
-.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px;flex:1;min-width:0}
-.room{border-radius:7px;padding:6px 4px;text-align:center;font-family:var(--f-mono);font-size:.78rem;font-weight:500;border:1px solid transparent;background:none}
-.room.temiz{background:var(--ok-soft);color:var(--ok)} .room.kirli{background:var(--warn-soft);color:var(--warn)}
-.room.kontrol{background:var(--info-soft);color:var(--info)} .room.ariza{background:var(--bad-soft);color:var(--bad)}
-.room.dolu{background:var(--surface-2);color:var(--muted);border-color:var(--line)}
-.room.sel{outline:2px solid var(--brass);outline-offset:1px}
-
 /* Rapor grafikleri */
 .chart{width:100%;height:auto;display:block}
 .chart text{fill:var(--muted);font-family:var(--f-mono);font-size:10px}
@@ -272,7 +261,7 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
   <div class="main">
     <div class="top">
       <button class="btn sm menu-btn" id="menuBtn" aria-label="Menüyü aç">☰ Menü</button>
-      <label class="search" for="q"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Personel, oda, form ara…"></label>
+      <label class="search" for="q"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Personel, doküman, form ara…"></label>
       <div class="meta">
         <span class="demo-tag">Prototip · örnek veri</span>
         <span class="hide-sm muted mono" id="clock">06.10.2026 · 09:41</span>
@@ -289,8 +278,8 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
         <div class="kpi"><span class="eyebrow">İçerideki personel</span><span class="v">42<small> / 58</small></span><span class="d">Vardiyada olması gereken: 44</span></div>
         <div class="kpi warn"><span class="eyebrow">Geç kalan</span><span class="v">3</span><span class="d">Ort. gecikme 14 dk</span></div>
         <div class="kpi alert"><span class="eyebrow">İmza bekleyen</span><span class="v">17</span><span class="d">6 personel · 4 doküman</span></div>
-        <div class="kpi"><span class="eyebrow">Hazır oda</span><span class="v">96<small> / 120</small></span><span class="d">11 kontrol bekliyor</span></div>
-        <div class="kpi alert"><span class="eyebrow">Açık arıza</span><span class="v">5</span><span class="d">1 tanesi SLA dışında</span></div>
+        <div class="kpi warn"><span class="eyebrow">Checklist</span><span class="v">%86</span><span class="d">2 liste saatinde bitmedi</span></div>
+        <div class="kpi alert"><span class="eyebrow">Süresi dolan belge</span><span class="v">3</span><span class="d">Sağlık raporu, hijyen sertifikası</span></div>
         <div class="kpi warn"><span class="eyebrow">Açık şikâyet</span><span class="v">2</span><span class="d">Bugün açılan: 1</span></div>
       </div>
       <div class="grid g-main">
@@ -298,7 +287,7 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
           <div class="body" id="deptCompliance"></div></div>
         <div class="panel"><header><h2>Dikkat gerektirenler</h2></header>
           <div class="list">
-            <div class="row"><span class="sev bad"></span><div><div class="t">Oda 412 · klima arızası</div><div class="s">SLA 4 saat · 5 sa 20 dk geçti · Teknik</div></div><button class="btn sm end" data-go="ariza">Aç</button></div>
+            <div class="row"><span class="sev bad"></span><div><div class="t">Can Yılmaz · haftalık 57 saat</div><div class="s">Vardiya planı 45 saat sınırını aşıyor · F&amp;B</div></div><button class="btn sm end" data-go="vardiya">Aç</button></div>
             <div class="row"><span class="sev bad"></span><div><div class="t">Mutfak soğuk oda sıcaklık kaydı eksik</div><div class="s">06:00 ölçümü girilmedi · F&amp;B</div></div><button class="btn sm end" data-go="checklist">Aç</button></div>
             <div class="row"><span class="sev warn"></span><div><div class="t">Elif Karaca · sağlık raporu süresi doluyor</div><div class="s">Özlük · 9 gün kaldı</div></div><button class="btn sm end" data-go="ozluk">Aç</button></div>
             <div class="row"><span class="sev warn"></span><div><div class="t">Misafir şikâyeti · Oda 208 gürültü</div><div class="s">Ön Büro · 1 sa 05 dk önce</div></div><button class="btn sm end" data-go="sikayet">Aç</button></div>
@@ -310,7 +299,7 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
         <div class="panel"><header><h2>Vardiya teslim notları</h2><button class="btn sm right" data-go="teslim">Tümü</button></header>
           <div class="list">
             <div class="row"><span class="sev info"></span><div><div class="t">Ön Büro · Gece → Sabah</div><div class="s">3 geç çıkış talebi onaylandı, kasa farkı yok, 2 VIP giriş 14:00.</div></div><span class="end mono muted" style="font-size:.75rem">07:02</span></div>
-            <div class="row"><span class="sev warn"></span><div><div class="t">Teknik · Gece → Sabah</div><div class="s">Jeneratör test edildi. 412 klima kompresör sesi, parça bekleniyor.</div></div><span class="end mono muted" style="font-size:.75rem">07:10</span></div>
+            <div class="row"><span class="sev warn"></span><div><div class="t">Güvenlik · Gece → Sabah</div><div class="s">Gece turu sorunsuz. Kamera kayıtları kontrol edildi, otopark kapısı 02:10'da kilitlendi.</div></div><span class="end mono muted" style="font-size:.75rem">07:10</span></div>
             <div class="row"><span class="sev ok"></span><div><div class="t">Housekeeping · Akşam → Gece</div><div class="s">Kat 3 tamam. Çamaşırhane teslimi 22:40'ta yapıldı.</div></div><span class="end mono muted" style="font-size:.75rem">23:05</span></div>
           </div></div>
       </div>
@@ -416,29 +405,12 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
         <div class="panel"><header><h2>Geçmiş teslimler</h2></header><div class="tbl-wrap"><table>
           <tr><th>Tarih</th><th>Departman</th><th>Vardiya</th><th>Durum</th></tr>
           <tr><td class="mono">06.10 07:02</td><td>Ön Büro</td><td>G → S</td><td><span class="pill ok">Onaylı</span></td></tr>
-          <tr><td class="mono">06.10 07:10</td><td>Teknik</td><td>G → S</td><td><span class="pill warn">1 açık iş</span></td></tr>
+          <tr><td class="mono">06.10 07:10</td><td>Güvenlik</td><td>G → S</td><td><span class="pill warn">1 açık iş</span></td></tr>
           <tr><td class="mono">05.10 23:05</td><td>Housekeeping</td><td>A → G</td><td><span class="pill ok">Onaylı</span></td></tr>
           <tr><td class="mono">05.10 23:01</td><td>Ön Büro</td><td>A → G</td><td><span class="pill ok">Onaylı</span></td></tr>
           <tr><td class="mono">05.10 15:12</td><td>Mutfak</td><td>S → A</td><td><span class="pill bad">Alan onaylamadı</span></td></tr>
         </table></div></div>
       </div>
-    </section>
-
-    <!-- 10. ODA KONTROL -->
-    <section class="view" id="v-oda">
-      <div class="head"><div><span class="eyebrow">Oda kontrol sistemi</span><h1>Oda durumu</h1><p>Kat görevlisi odayı bitirince telefondan "temiz" işaretler, supervisor 25 maddelik oda kontrol formuyla onaylar. Bulunan arıza tek dokunuşla teknik servise iş emri olarak düşer.</p></div></div>
-      <div class="legend"><span class="room temiz">Temiz</span><span class="room kontrol">Kontrol bekliyor</span><span class="room kirli">Kirli</span><span class="room dolu">Dolu</span><span class="room ariza">Arızalı</span></div>
-      <div class="grid g-main">
-        <div class="panel"><div class="body"><div class="floors" id="floors"></div></div></div>
-        <div class="panel" id="roomDetail"></div>
-      </div>
-    </section>
-
-    <!-- 11. TEKNİK ARIZA -->
-    <section class="view" id="v-ariza">
-      <div class="head"><div><span class="eyebrow">Teknik, bakım ve tesis</span><h1>Arıza ve iş emirleri</h1><p>Her departman arıza bildirebilir. Teknik şef atar, teknisyen fotoğrafla kapatır. Öncelik seviyesine göre çözüm süresi (SLA) izlenir. Periyodik bakımlar takvimden otomatik oluşur.</p></div>
-        <div class="actions"><button class="btn primary">Arıza bildir</button></div></div>
-      <div class="panel"><div class="tbl-wrap"><table id="faultTable"></table></div></div>
     </section>
 
     <!-- 12. ŞİKÂYET -->
@@ -468,15 +440,15 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
           <tr><th>Gösterge</th><th>Bu hafta</th><th>Geçen hafta</th><th>Durum</th></tr>
           <tr><td>Toplam fazla mesai</td><td class="num">62 sa</td><td class="num">48 sa</td><td><span class="pill warn">Arttı</span></td></tr>
           <tr><td>Checklist tamamlanma</td><td class="num">%91</td><td class="num">%87</td><td><span class="pill ok">İyi</span></td></tr>
-          <tr><td>Ort. arıza çözüm süresi</td><td class="num">3 sa 10 dk</td><td class="num">4 sa 40 dk</td><td><span class="pill ok">İyi</span></td></tr>
+          <tr><td>Vardiya teslim onay oranı</td><td class="num">%96</td><td class="num">%92</td><td><span class="pill ok">İyi</span></td></tr>
           <tr><td>Misafir şikâyeti</td><td class="num">6</td><td class="num">4</td><td><span class="pill warn">Arttı</span></td></tr>
-          <tr><td>Oda kontrol hata oranı</td><td class="num">%4,2</td><td class="num">%5,8</td><td><span class="pill ok">İyi</span></td></tr>
+          <tr><td>Zorunlu eğitim tamamlanma</td><td class="num">%84</td><td class="num">%80</td><td><span class="pill ok">İyi</span></td></tr>
           <tr><td>Bekleyen imza</td><td class="num">17</td><td class="num">9</td><td><span class="pill bad">Dikkat</span></td></tr>
         </table></div></div>
       </div>
       <div class="panel"><header><h2>Departman müdürü notları</h2></header><div class="list">
         <div class="row"><span class="sev warn"></span><div><div class="t">F&amp;B Müdürü · Fazla mesai</div><div class="s">Hafta sonu düğün organizasyonu nedeniyle servis ekibinde 28 saat fazla mesai. Gelecek organizasyon için 2 ekstra personel talep ediliyor.</div></div></div>
-        <div class="row"><span class="sev ok"></span><div><div class="t">Housekeeping Müdürü · Oda kontrol</div><div class="s">Yeni kontrol formuyla hata oranı düştü. En sık hata: banyo silikon ve minibar eksikleri.</div></div></div>
+        <div class="row"><span class="sev ok"></span><div><div class="t">Housekeeping Müdürü · Checklist</div><div class="s">Kat checklistlerinde tamamlanma %97'ye çıktı. Yeni başlayan 2 personelin oryantasyonu Perşembe bitiyor.</div></div></div>
       </div></div>
     </section>
 
@@ -489,7 +461,7 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
           <div class="panel" style="padding:10px"><div class="eyebrow">Bugünkü vardiya</div><b class="mono">07:00 – 15:00</b><div class="muted" style="font-size:.75rem">Giriş: 06:52 ✓</div></div>
           <button class="btn primary" style="justify-content:center" data-go="qr">QR okut · Çıkış yap</button>
           <div class="panel" style="padding:10px;border-color:var(--bad)"><div class="eyebrow" style="color:var(--bad)">2 doküman imza bekliyor</div><div style="font-size:.8rem">Lojman Talimatı v3<br>KVKK Bilgi Güvenliği</div><button class="btn sm" style="margin-top:6px" data-sign="2">Oku ve imzala</button></div>
-          <div class="panel" style="padding:10px"><div class="eyebrow">Görevlerim</div><div style="font-size:.8rem">Kat 3 · 14 oda (9 tamam)<br>Kat 3 koridor checklist</div></div>
+          <div class="panel" style="padding:10px"><div class="eyebrow">Görevlerim</div><div style="font-size:.8rem">Kat 3 koridor checklist (3/4)<br>Hijyen eğitimi · Perşembe 10:00</div></div>
         </div></div>
         <div class="phone"><div class="notch"></div><div class="scr">
           <b style="font-family:var(--f-display)">Bu haftaki vardiyam</b>
@@ -498,17 +470,16 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
           <button class="btn">İzin talebi oluştur</button>
         </div></div>
         <div class="phone"><div class="notch"></div><div class="scr">
-          <b style="font-family:var(--f-display)">Oda 307 · Kontrol</b>
-          <div class="muted" style="font-size:.75rem">Supervisor formu · 25 madde</div>
+          <b style="font-family:var(--f-display)">Vardiya teslimi</b>
+          <div class="muted" style="font-size:.75rem">Ön Büro · Gece → Sabah</div>
           <div class="checks">
-            <div class="ci"><span class="ico-ok">✓</span> Yatak ve nevresim</div>
-            <div class="ci"><span class="ico-ok">✓</span> Banyo, havlu seti</div>
-            <div class="ci"><span class="ico-no">✗</span> Minibar eksik: 2 su</div>
-            <div class="ci"><span class="ico-ok">✓</span> Klima, TV, aydınlatma</div>
-            <div class="ci"><span class="ico-wait">!</span> Perde rayı gevşek</div>
+            <div class="ci"><span class="ico-ok">✓</span> Kasa devri · fark yok</div>
+            <div class="ci"><span class="ico-ok">✓</span> Gece raporu hazır</div>
+            <div class="ci"><span class="ico-wait">!</span> 208 şikâyetine geri dönüş</div>
+            <div class="ci"><span class="ico-ok">✓</span> 2 VIP giriş 14:00</div>
           </div>
-          <button class="btn sm">📷 Fotoğraf ekle</button>
-          <button class="btn primary sm">Teknik servise bildir</button>
+          <div class="panel" style="padding:10px;font-size:.8rem"><div class="eyebrow">Teslim eden</div>Burak Şahin · 07:02 ✓</div>
+          <button class="btn primary sm">Teslim aldım, onayla</button>
         </div></div>
       </div>
     </section>
@@ -517,7 +488,7 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
     <section class="view" id="v-calisma">
       <div class="study">
         <div class="head"><div><span class="eyebrow">Proje çalışması · Ekim 2026</span><h1>Oscar Personel: nasıl bir yazılım olacak?</h1></div></div>
-        <p class="lead">Tarayıcıdan çalışan tek bir web platformu. Yöneticiler bilgisayardan, personel telefondan kullanır. Otelin bugün kâğıtla, defterle ve WhatsApp gruplarıyla yürüyen tüm personel ve operasyon kayıtları burada toplanır: kim ne zaman geldi, hangi kuralı imzaladı, hangi oda kontrol edildi, hangi arıza kaç saatte kapandı.</p>
+        <p class="lead">Tarayıcıdan çalışan tek bir web platformu. Yöneticiler bilgisayardan, personel telefondan kullanır. Otelin bugün kâğıtla, defterle ve WhatsApp gruplarıyla yürüyen tüm personel ve operasyon kayıtları burada toplanır: kim ne zaman geldi, hangi kuralı imzaladı, hangi checklist tamamlandı, hangi şikâyete kaç saatte dönüldü.</p>
 
         <div><h2>Kim ne görecek?</h2>
         <div class="panel" style="margin-top:10px"><div class="tbl-wrap"><table>
@@ -534,13 +505,13 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
           <div class="mod"><span class="tag">MODÜL 1</span><h3>Personel ve İK</h3><ul><li>Personel kayıtları</li><li>Özlük dosyası (PDF çıktı)</li><li>İşe giriş ve çıkış süreci</li><li>Lojman yerleşimi ve zimmet</li><li>İzin talepleri</li></ul></div>
           <div class="mod"><span class="tag">MODÜL 2</span><h3>Mesai ve Vardiya</h3><ul><li>QR ile giriş ve çıkış</li><li>Haftalık shift planı</li><li>Gecikme ve fazla mesai</li><li>Aylık puantaj, bordroya aktarım</li></ul></div>
           <div class="mod"><span class="tag">MODÜL 3</span><h3>Doküman ve İmza</h3><ul><li>Otel El Kitabı, 20 bölüm</li><li>Oryantasyon ve bilgilendirme formları</li><li>Lojman talimatı, otel genel kuralları</li><li>Versiyon ve yeniden imza takibi</li></ul></div>
-          <div class="mod"><span class="tag">MODÜL 4</span><h3>Günlük Operasyon</h3><ul><li>Günlük checklistler</li><li>Vardiya teslimleri</li><li>Oda kontrol sistemi</li><li>Teknik arıza ve bakım</li><li>Misafir şikâyetleri</li></ul></div>
+          <div class="mod"><span class="tag">MODÜL 4</span><h3>Günlük Operasyon</h3><ul><li>Günlük checklistler</li><li>Vardiya teslimleri</li><li>Misafir şikâyetleri</li></ul></div>
           <div class="mod"><span class="tag">MODÜL 5</span><h3>Eğitim ve Yetkinlik</h3><ul><li>Zorunlu eğitim takibi</li><li>Katılım tutanakları</li><li>Yetkinlik puanlaması</li><li>Süresi dolan sertifika uyarısı</li></ul></div>
           <div class="mod"><span class="tag">MODÜL 6</span><h3>Raporlama ve Denetim</h3><ul><li>Günlük ve haftalık yönetici raporu</li><li>Departman uyum skoru</li><li>İç denetim ve aksiyon takibi</li><li>"Otel bugün çalışır durumda mı" kontrolü</li></ul></div>
         </div></div>
 
         <div><h2>Otel El Kitabı: 20 bölüm nasıl işlenecek?</h2>
-        <p>Gönderdiğiniz başlıkların her biri sistemde bir <b>doküman</b> olur. Her dokümanın bir kodu (ör. <span class="doc-code">OSC-EK-05</span>), versiyonu, yürürlük tarihi ve "kimler imzalayacak" listesi vardır. Bir bölüm sadece metin değildir: içindeki formlar ve checklistler, Modül 4'teki günlük kayıtlara bağlanır. Örneğin "Housekeeping Operasyonu" bölümü imzalanır, içindeki oda kontrol formu da her gün Oda Kontrol ekranında kullanılır.</p>
+        <p>Gönderdiğiniz başlıkların her biri sistemde bir <b>doküman</b> olur. Her dokümanın bir kodu (ör. <span class="doc-code">OSC-EK-05</span>), versiyonu, yürürlük tarihi ve "kimler imzalayacak" listesi vardır. Bir bölüm sadece metin değildir: içindeki formlar ve checklistler, Modül 4'teki günlük kayıtlara bağlanır. Örneğin "Housekeeping Operasyonu" bölümü imzalanır, içindeki kat checklisti de her gün Günlük Checklist ekranında doldurulur.</p>
         <div class="note"><b>İmza hakkında:</b> Telefonda "okudum, anladım" onayı ve parmakla imza; tarih, saat, cihaz ve IP bilgisiyle birlikte iç talimat ve bilgilendirme belgeleri için yeterli bir kayıt oluşturur. İş sözleşmesi, ibraname gibi hukuki ağırlığı yüksek belgeler için ıslak imzalı kâğıt taranıp özlüğe yüklenir veya nitelikli elektronik imza kullanılır. Hangi belgenin hangi yöntemle imzalanacağını iş hukuku danışmanınızla netleştirmenizi öneririz.</div></div>
 
         <div><h2>QR mesai sistemi nasıl çalışacak?</h2>
@@ -566,7 +537,7 @@ label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px
         <div class="phases">
           <div class="phase"><b>Faz 1 · Temel</b><span class="muted mono">~4 hafta</span><ul><li>Personel kaydı ve özlük</li><li>Doküman ve imza (20 bölüm + formlar)</li><li>QR mesai, kiosk</li><li>Rol ve yetkiler</li></ul></div>
           <div class="phase"><b>Faz 2 · Vardiya</b><span class="muted mono">~3 hafta</span><ul><li>Haftalık shift planı</li><li>Puantaj, bordro aktarımı</li><li>İşe giriş ve çıkış süreci</li><li>Lojman</li></ul></div>
-          <div class="phase"><b>Faz 3 · Operasyon</b><span class="muted mono">~4 hafta</span><ul><li>Checklistler, vardiya teslim</li><li>Oda kontrol</li><li>Teknik arıza</li><li>Misafir şikâyeti</li></ul></div>
+          <div class="phase"><b>Faz 3 · Operasyon</b><span class="muted mono">~3 hafta</span><ul><li>Günlük checklistler</li><li>Vardiya teslim</li><li>Misafir şikâyeti</li></ul></div>
           <div class="phase"><b>Faz 4 · Raporlama</b><span class="muted mono">~3 hafta</span><ul><li>Eğitim ve yetkinlik</li><li>Yönetici raporları</li><li>İç denetim</li><li>PMS entegrasyonu (isteğe bağlı)</li></ul></div>
         </div></div>
 
@@ -616,7 +587,7 @@ const NAV=[
  ['Personel ve İK',[['ozluk','Personel ve özlük','user'],['surec','İşe giriş / çıkış','flow',3],['lojman','Lojman','bed']]],
  ['Mesai',[['qr','QR mesai takibi','qr'],['vardiya','Vardiya planı','cal']]],
  ['Doküman',[['dokuman','Kurallar ve imzalar','doc',17,true],['egitim','Eğitim ve yetkinlik','cap']]],
- ['Operasyon',[['checklist','Günlük checklist','check'],['teslim','Vardiya teslimi','swap'],['oda','Oda kontrol','door'],['ariza','Teknik arıza','wrench',5,true],['sikayet','Misafir şikâyeti','chat',2]]],
+ ['Operasyon',[['checklist','Günlük checklist','check'],['teslim','Vardiya teslimi','swap'],['sikayet','Misafir şikâyeti','chat',2]]],
  ['Yönetim',[['rapor','Yönetici raporları','chart'],['mobil','Personel mobil','phone']]]];
 $('#nav').innerHTML=NAV.map(([g,items])=>`<div class="nav-group"><span>${g}</span>${items.map(([id,l,i,c,h])=>`<button data-go="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ic[i]}</svg>${l}${c?`<span class="count${h?' hot':''}">${c}</span>`:''}</button>`).join('')}</div>`).join('');
 function go(id){ if(!$('#v-'+id)) id='panel';
@@ -755,7 +726,7 @@ $('#lojmanGrid').innerHTML=[['Blok A · Oda 1','4 kişilik',['Kemal Aksoy','Gök
 /* Checklist */
 const CL={'Ön Büro · Sabah açılış':[['Kasa devri ve sayım','Selin A. 07:04',1],['Gece raporu kontrolü','Selin A. 07:10',1],['Bugünkü VIP ve grup girişleri','Selin A. 07:20',1],['Lobi ve resepsiyon düzeni','',0],['Anahtar kartı stok sayımı','',0],['Misafir şikâyet defteri kontrolü','',0]],
  'Mutfak · HACCP':[['Soğuk oda sıcaklığı 06:00 (°C)','',0],['Derin dondurucu −18 °C altında','Kemal A. 06:05',1],['Mal kabul kontrolü ve etiketleme','Kemal A. 06:40',1],['Personel hijyen kontrolü','Kemal A. 06:10',1],['Yağ değişim kaydı','',0]],
- 'Housekeeping · Kat 3':[['Koridor ve yangın çıkışı açık','Elif K. 08:15',1],['Kat arabası dolumu','Ayşe Y. 07:20',1],['Kayıp eşya kaydı','',0],['Minibar sayım listesi','Ayşe Y. 08:00',1]],
+ 'Housekeeping · Kat 3':[['Koridor ve yangın çıkışı açık','Elif K. 08:15',1],['Kat arabası dolumu','Ayşe Y. 07:20',1],['Kayıp eşya kaydı','',0],['Kat ofisi malzeme stoğu','Ayşe Y. 08:00',1]],
  'Güvenlik · Gece turu':[['Yangın paneli kontrolü','Mehmet K. 00:10',1],['Kamera kayıt kontrolü','Mehmet K. 00:20',1],['Dış kapılar kilit turu 02:00','Mehmet K. 02:05',1],['Jeneratör yakıt seviyesi','Mehmet K. 04:00',1]]};
 let clKey=Object.keys(CL)[0];
 $('#clTabs').innerHTML=Object.keys(CL).map((k,i)=>`<button class="${i?'':'on'}" data-k="${k}">${k}</button>`).join('');
@@ -765,28 +736,6 @@ function renderCL(){const L=CL[clKey];$('#clTitle').textContent=clKey;const d=L.
 renderCL();
 $('#clTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;clKey=b.dataset.k;$$('#clTabs button').forEach(x=>x.classList.toggle('on',x===b));renderCL()});
 $('#clItems').addEventListener('change',e=>{const i=e.target.dataset.i;const it=CL[clKey][i];it[2]=e.target.checked?1:0;const d=new Date();it[1]=it[2]?`Siz ${pad(d.getHours())}:${pad(d.getMinutes())}`:'';renderCL()});
-
-/* Odalar */
-const ST=['temiz','temiz','temiz','dolu','dolu','kontrol','kirli','temiz','dolu','dolu','temiz','kontrol'];const STL={temiz:'Temiz',kirli:'Kirli',kontrol:'Kontrol bekliyor',ariza:'Arızalı',dolu:'Dolu'};
-const ROOMS={};let fl='';for(let f=5;f>=1;f--){let r='';for(let n=1;n<=24;n++){const no=f*100+n;let s=ST[(f*7+n*5)%ST.length];if(no===412||no===218)s='ariza';ROOMS[no]=s;r+=`<button class="room ${s}" data-r="${no}">${no}</button>`}fl+=`<div class="floor"><span>Kat ${f}</span><div class="rooms">${r}</div></div>`}
-$('#floors').innerHTML=fl;
-function roomDetail(no){const s=ROOMS[no];$$('.room').forEach(b=>b.classList.toggle('sel',b.dataset.r==no));
- $('#roomDetail').innerHTML=`<header><h2>Oda ${no}</h2><span class="right"><span class="pill ${s==='temiz'?'ok':s==='ariza'?'bad':s==='kirli'?'warn':s==='kontrol'?'info':'neutral'}">${STL[s]}</span></span></header><div class="body" style="display:flex;flex-direction:column;gap:12px">
- <dl class="dl"><div><dt>Tip</dt><dd>${no%2?'Standart çift':'Deluxe deniz manzara'}</dd></div><div><dt>Kat görevlisi</dt><dd>${no<300?'Fatma Demir':'Ayşe Yıldız'}</dd></div><div><dt>Son temizlik</dt><dd class="mono">06.10 · 09:12</dd></div><div><dt>Son kontrol</dt><dd class="mono">Elif K. · 05.10</dd></div></dl>
- ${s==='ariza'?`<div class="note" style="background:var(--bad-soft);border-color:var(--bad)"><b>Açık iş emri:</b> ${no===412?'Klima soğutmuyor, kompresör sesi. SLA aşıldı.':'Lavabo gideri tıkalı. Teknisyen yolda.'}</div>`:''}
- <div class="eyebrow">Son kontrol formu · 25 madde</div><div class="checks"><div class="ci"><span class="ico-ok">✓</span>Yatak ve nevresim<span class="st muted">uygun</span></div><div class="ci"><span class="ico-ok">✓</span>Banyo ve havlu seti<span class="st muted">uygun</span></div><div class="ci"><span class="ico-no">✗</span>Minibar<span class="st"><span class="pill warn">2 su eksik</span></span></div><div class="ci"><span class="ico-ok">✓</span>Klima, TV, aydınlatma<span class="st muted">uygun</span></div></div>
- <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm primary">Kontrol formu başlat</button><button class="btn sm" data-go="ariza">Arıza bildir</button></div></div>`}
-$('#floors').addEventListener('click',e=>{const b=e.target.closest('.room');if(b)roomDetail(+b.dataset.r)});
-roomDetail(412);
-
-/* Arızalar */
-$('#faultTable').innerHTML=`<tr><th>No</th><th>Konu</th><th>Yer</th><th>Bildiren</th><th>Atanan</th><th>Öncelik</th><th>SLA</th><th>Durum</th></tr>`+[
- ['İE-2041','Klima soğutmuyor','Oda 412','Ön Büro','Okan Tekin','bad Yüksek','5 sa 20 dk / 4 sa','bad SLA aşıldı'],
- ['İE-2042','Lavabo gideri tıkalı','Oda 218','Housekeeping','Serkan Uçar','warn Orta','1 sa 10 dk / 8 sa','info Yolda'],
- ['İE-2039','Bulaşık makinesi su kaçırıyor','Mutfak','Mutfak','Okan Tekin','bad Yüksek','2 sa 05 dk / 4 sa','warn Parça bekliyor'],
- ['İE-2038','Lobi spot ampulü','Lobi','Güvenlik','Serkan Uçar','info Düşük','—','ok Çözüldü'],
- ['İE-2036','Havuz pompası periyodik bakım','Havuz','Planlı bakım','Okan Tekin','info Planlı','Bugün 14:00','neutral Planlandı']
-].map(r=>`<tr><td class="mono">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td>${[r[5]].map(x=>`<td><span class="pill ${x.split(' ')[0]}">${x.split(' ').slice(1).join(' ')}</span></td>`).join('')}<td class="mono" style="white-space:nowrap">${r[6]}</td><td><span class="pill ${r[7].split(' ')[0]}">${r[7].split(' ').slice(1).join(' ')}</span></td></tr>`).join('');
 
 /* Şikâyetler */
 $('#complaints').innerHTML=[['bad','Oda 208 · Yan odadan gürültü','Ön Büro · Misafir: B. Kılıç · Telafi: oda değişimi teklif edildi','Açık · 1 sa 05 dk'],['warn','Restoran · Kahvaltıda bekleme süresi','F&B Servis · Google yorumu · 3/5 puan','Geri dönüş bekliyor'],['ok','Oda 115 · Havlu eksikliği','Housekeeping · 10 dk içinde çözüldü, misafir arandı','Kapandı'],['ok','Otopark · Vale gecikmesi','Güvenlik · Özür ve ücretsiz kahve','Kapandı']].map(([s,t,d,e])=>`<div class="row"><span class="sev ${s}"></span><div><div class="t">${t}</div><div class="s">${d}</div></div><span class="end pill ${s}">${e}</span></div>`).join('');
