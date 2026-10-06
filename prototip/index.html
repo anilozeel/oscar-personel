@@ -1,0 +1,814 @@
+<title>Oscar Personel</title>
+<meta name="description" content="Oscar otel personel ve operasyon yönetim platformu – tıklanabilir arayüz prototipi">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: uygulama kabuğu — solda gruplu menü (otel defteri gibi bölümler), sağda modül ekranı; telefonda menü üstte kayan şerit. */
+:root{
+  --bg:#EDF1EF; --surface:#FFFFFF; --surface-2:#F5F8F6; --ink:#16211E; --muted:#5A6965; --line:#D7DFDC;
+  --side:#11302A; --side-ink:#CFE0DA; --side-muted:#86A69D; --side-active:#1D4A40;
+  --accent:#1E6D5D; --accent-ink:#FFFFFF; --accent-soft:#DCEDE8;
+  --brass:#B4862C; --brass-soft:#F4EAD3;
+  --ok:#2C7D4F; --ok-soft:#DDF0E3; --warn:#A86F06; --warn-soft:#F8ECCF; --bad:#B53A33; --bad-soft:#F7DEDB; --info:#33639A; --info-soft:#DEE8F4;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1513; --surface:#151E1B; --surface-2:#1B2622; --ink:#E4EDEA; --muted:#94A49F; --line:#2A3733;
+  --side:#09110F; --side-ink:#CFE0DA; --side-muted:#7C978F; --side-active:#173A32;
+  --accent:#52B39B; --accent-ink:#06201A; --accent-soft:#183A32;
+  --brass:#DDB15A; --brass-soft:#3A3020;
+  --ok:#5CC488; --ok-soft:#173526; --warn:#E2AE45; --warn-soft:#3A2F15; --bad:#EE7A72; --bad-soft:#3D1E1C; --info:#7FAEE3; --info-soft:#1B2C40;
+  color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0E1513; --surface:#151E1B; --surface-2:#1B2622; --ink:#E4EDEA; --muted:#94A49F; --line:#2A3733;
+  --side:#09110F; --side-ink:#CFE0DA; --side-muted:#7C978F; --side-active:#173A32;
+  --accent:#52B39B; --accent-ink:#06201A; --accent-soft:#183A32;
+  --brass:#DDB15A; --brass-soft:#3A3020;
+  --ok:#5CC488; --ok-soft:#173526; --warn:#E2AE45; --warn-soft:#3A2F15; --bad:#EE7A72; --bad-soft:#3D1E1C; --info:#7FAEE3; --info-soft:#1B2C40;
+  color-scheme:dark;}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:1.6rem} h2{font-size:1.15rem} h3{font-size:1rem}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+
+/* Kabuk */
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100%}
+.side{background:var(--side);color:var(--side-ink);padding:18px 12px 24px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px}
+.brand-mark{width:34px;height:34px;border-radius:8px;background:var(--brass);color:#1A1406;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:1.1rem}
+.brand b{font-family:var(--f-display);font-size:1.05rem;display:block;line-height:1.1;color:#fff}
+.brand small{color:var(--side-muted);font-size:.72rem}
+.nav-group{margin-top:14px}
+.nav-group>span{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.11em;color:var(--side-muted);padding:0 10px 6px;font-weight:600}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;color:var(--side-ink);padding:7px 10px;border-radius:7px;font-size:.86rem}
+.nav button:hover{background:rgba(255,255,255,.06)}
+.nav button.on{background:var(--side-active);color:#fff;box-shadow:inset 3px 0 0 var(--brass)}
+.nav svg{width:16px;height:16px;flex:none;opacity:.85}
+.nav .count{margin-left:auto;font-family:var(--f-mono);font-size:.7rem;background:rgba(255,255,255,.1);padding:0 6px;border-radius:9px}
+.nav .count.hot{background:var(--brass);color:#1A1406}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:14px;padding:12px 28px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:env(safe-area-inset-top,0px);z-index:5;flex-wrap:wrap}
+.top .search{flex:1;min-width:160px;max-width:420px;display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--muted)}
+.top .search input{border:0;background:none;outline:none;flex:1;min-width:0}
+.top .meta{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:.82rem}
+.chip-shift{background:var(--accent-soft);color:var(--accent);border-radius:20px;padding:3px 10px;font-weight:600;font-size:.76rem}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:600;font-size:.78rem;flex:none}
+.demo-tag{font-size:.7rem;color:var(--brass);border:1px dashed var(--brass);border-radius:6px;padding:2px 7px}
+
+.view{padding:24px 28px 48px;display:none;flex-direction:column;gap:20px}
+.view.on{display:flex}
+.head{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.head>div:first-child{min-width:0}
+.head p{margin:4px 0 0;color:var(--muted);max-width:68ch}
+.head .actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 13px;font-weight:500;font-size:.85rem;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:4px 9px;font-size:.78rem}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0}
+.panel>header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel>header .right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.panel .body{padding:16px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g-main{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .v{font-family:var(--f-display);font-size:1.7rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:.9rem;color:var(--muted);font-weight:500}
+.kpi .d{font-size:.76rem;color:var(--muted)}
+.kpi.alert{border-color:var(--bad);box-shadow:inset 0 3px 0 var(--bad)}
+.kpi.warn{box-shadow:inset 0 3px 0 var(--warn)}
+
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:2px 9px;font-size:.74rem;font-weight:600;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--info-soft);color:var(--info)}
+.pill.neutral{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+th{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface-2)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td .who{display:flex;align-items:center;gap:9px;white-space:nowrap}
+td .who .avatar{width:26px;height:26px;font-size:.66rem}
+
+.bar{height:7px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.bar.brass i{background:var(--brass)}
+
+.list{display:flex;flex-direction:column}
+.list .row{display:flex;gap:12px;align-items:flex-start;padding:11px 16px;border-bottom:1px solid var(--line)}
+.list .row:last-child{border-bottom:0}
+.list .row .t{font-weight:500}
+.list .row .s{font-size:.78rem;color:var(--muted)}
+.list .row .end{margin-left:auto;text-align:right;flex:none}
+.sev{width:4px;align-self:stretch;border-radius:3px;flex:none}
+.sev.bad{background:var(--bad)} .sev.warn{background:var(--warn)} .sev.info{background:var(--info)} .sev.ok{background:var(--ok)}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{background:none;border:0;padding:8px 12px;border-bottom:2px solid transparent;color:var(--muted);font-weight:500;white-space:nowrap}
+.tabs button.on{color:var(--ink);border-color:var(--brass)}
+
+/* QR */
+.kiosk{background:var(--side);color:#fff;border-radius:14px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.kiosk canvas{background:#fff;border-radius:10px;padding:10px;width:220px;height:220px;max-width:100%}
+.kiosk .cd{font-family:var(--f-mono);font-size:.8rem;color:var(--side-muted)}
+.kiosk .ring{height:4px;width:220px;max-width:100%;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+.kiosk .ring i{display:block;height:100%;background:var(--brass);transition:width 1s linear}
+.phone{width:250px;max-width:100%;border:8px solid var(--ink);border-radius:30px;background:var(--surface);overflow:hidden;margin-inline:auto}
+.phone .scr{padding:16px 14px;display:flex;flex-direction:column;gap:10px;min-height:400px}
+.phone .notch{width:80px;height:16px;background:var(--ink);border-radius:0 0 10px 10px;margin:0 auto}
+.flow{display:flex;gap:8px;flex-wrap:wrap;counter-reset:f}
+.flow li{list-style:none;flex:1 1 150px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.82rem;counter-increment:f}
+.flow li::before{content:counter(f);font-family:var(--f-mono);font-weight:500;color:var(--brass);display:block;font-size:.75rem}
+.flow{padding:0;margin:0}
+.flow.stack{flex-direction:column}.flow.stack li{flex:none}
+
+/* Vardiya */
+.shift-grid{min-width:860px}
+.shift-grid td,.shift-grid th{text-align:center;padding:6px}
+.shift-grid td:first-child,.shift-grid th:first-child{text-align:left;padding-left:12px}
+.sh{display:inline-block;min-width:66px;border-radius:6px;padding:4px 6px;font-family:var(--f-mono);font-size:.72rem;font-weight:500;border:1px solid transparent}
+.sh.S{background:var(--info-soft);color:var(--info)} .sh.A{background:var(--brass-soft);color:var(--brass)}
+.sh.G{background:var(--side);color:var(--side-ink)} .sh.I{background:var(--surface-2);color:var(--muted);border-color:var(--line)}
+.sh.R{background:var(--ok-soft);color:var(--ok)}
+button.sh{cursor:pointer}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);align-items:center}
+.dept-row td{background:var(--surface-2);font-weight:600;font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:left!important}
+
+/* Doküman */
+.doc-list .row{cursor:pointer}
+.doc-code{font-family:var(--f-mono);font-size:.72rem;color:var(--brass);background:var(--brass-soft);border-radius:5px;padding:1px 6px;flex:none}
+.modal-bg{position:fixed;inset:0;background:rgba(5,15,12,.55);display:grid;place-items:center;padding:16px;z-index:40}
+.modal{background:var(--surface);border-radius:14px;width:min(620px,100%);max-height:92vh;overflow:auto;border:1px solid var(--line)}
+.modal header{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.modal .content{padding:18px;display:flex;flex-direction:column;gap:12px}
+.modal .doc-text{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:14px;font-size:.85rem;max-height:200px;overflow:auto}
+.modal .doc-text p{margin:0 0 8px}
+.sigpad{border:1.5px dashed var(--muted);border-radius:8px;width:100%;height:140px;background:var(--surface-2);touch-action:none;display:block}
+.stamp{border:2px solid var(--ok);color:var(--ok);border-radius:8px;padding:10px 14px;font-family:var(--f-mono);font-size:.8rem;transform:rotate(-1.5deg);align-self:flex-start}
+label.chk{display:flex;gap:9px;align-items:flex-start;cursor:pointer}
+label.chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+
+/* Özlük */
+.profile{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.profile .avatar{width:64px;height:64px;font-size:1.3rem;background:var(--brass);color:#1A1406}
+.dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px}
+.dl div{display:flex;flex-direction:column;min-width:0}
+.dl dt{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dl dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.dl{margin:0}
+.checks{display:flex;flex-direction:column;gap:2px}
+.checks .ci{display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line);font-size:.85rem}
+.checks .ci:last-child{border-bottom:0}
+.checks .ci .st{margin-left:auto}
+.ico-ok{color:var(--ok)} .ico-no{color:var(--bad)} .ico-wait{color:var(--warn)}
+
+/* Süreç kanban */
+.kanban{display:grid;grid-template-columns:repeat(5,minmax(180px,1fr));gap:12px;overflow-x:auto;padding-bottom:4px}
+.col{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.col h3{font-size:.85rem;display:flex;justify-content:space-between}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:.8rem;display:flex;flex-direction:column;gap:6px}
+.card b{font-weight:600;font-size:.86rem}
+
+/* Checklist */
+.cl-item{display:flex;gap:10px;align-items:center;padding:9px 16px;border-bottom:1px solid var(--line)}
+.cl-item:last-child{border-bottom:0}
+.cl-item input{accent-color:var(--accent);width:17px;height:17px;flex:none}
+.cl-item.done span.t{color:var(--muted);text-decoration:line-through}
+.cl-item .by{margin-left:auto;font-size:.74rem;color:var(--muted);font-family:var(--f-mono);white-space:nowrap}
+
+/* Oda */
+.floors{display:flex;flex-direction:column;gap:10px}
+.floor{display:flex;gap:10px;align-items:center}
+.floor>span{width:48px;flex:none;font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px;flex:1;min-width:0}
+.room{border-radius:7px;padding:6px 4px;text-align:center;font-family:var(--f-mono);font-size:.78rem;font-weight:500;border:1px solid transparent;background:none}
+.room.temiz{background:var(--ok-soft);color:var(--ok)} .room.kirli{background:var(--warn-soft);color:var(--warn)}
+.room.kontrol{background:var(--info-soft);color:var(--info)} .room.ariza{background:var(--bad-soft);color:var(--bad)}
+.room.dolu{background:var(--surface-2);color:var(--muted);border-color:var(--line)}
+.room.sel{outline:2px solid var(--brass);outline-offset:1px}
+
+/* Rapor grafikleri */
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-family:var(--f-mono);font-size:10px}
+.chart .grid-l{stroke:var(--line);stroke-width:1}
+.hbar{display:grid;grid-template-columns:110px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:.8rem;padding:4px 0}
+.hbar .num{text-align:right}
+
+/* Çalışma (doküman) */
+.study{max-width:980px;display:flex;flex-direction:column;gap:22px}
+.study p,.study li{max-width:72ch}
+.study .lead{font-size:1.02rem}
+.modmap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px}
+.mod h3{display:flex;gap:8px;align-items:center}
+.mod ul{margin:0;padding-left:18px;font-size:.84rem;color:var(--muted)}
+.mod .tag{font-family:var(--f-mono);font-size:.68rem;color:var(--brass)}
+.phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.phase{border-top:3px solid var(--brass);background:var(--surface);border-radius:0 0 var(--r) var(--r);border-left:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 14px;font-size:.84rem}
+.phase b{display:block;font-family:var(--f-display);font-size:1rem;margin-bottom:4px}
+.phase ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+.arch{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.arch .box{flex:1 1 160px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;font-size:.82rem}
+.arch .box b{display:block;font-size:.86rem}
+.arch .arrow{align-self:center;color:var(--muted);font-family:var(--f-mono)}
+.note{background:var(--brass-soft);border:1px solid var(--brass);border-radius:8px;padding:12px 14px;font-size:.85rem}
+.qs{counter-reset:q;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qs li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.85rem;counter-increment:q;display:flex;gap:10px}
+.qs li::before{content:counter(q);font-family:var(--f-mono);color:var(--brass);font-weight:500}
+
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));right:18px;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:8px;font-size:.85rem;z-index:50;max-width:calc(100% - 36px)}
+
+/* Mobil */
+.menu-btn{display:none}
+@media (max-width:1180px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.modmap{grid-template-columns:repeat(2,minmax(0,1fr))}.phases{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;inset:0 auto 0 0;width:264px;z-index:30;transform:translateX(-105%);transition:transform .2s;height:100%;padding-top:calc(18px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.4)}
+  .menu-btn{display:inline-flex}
+  .g2,.g3,.g-main{grid-template-columns:minmax(0,1fr)}
+  .view{padding:18px 16px 40px}
+  .top{padding:10px 16px}
+  .top .meta .hide-sm{display:none}
+}
+@media (max-width:560px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .modmap,.phases,.qs,.dl{grid-template-columns:minmax(0,1fr)}
+  .top .search{order:3;max-width:none;flex-basis:100%}
+  .hbar{grid-template-columns:84px minmax(0,1fr) 40px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand"><div class="brand-mark">O</div><div><b>Oscar Personel</b><small>Otel Yönetim Platformu</small></div></div>
+    <nav class="nav" id="nav"></nav>
+  </aside>
+
+  <div class="main">
+    <div class="top">
+      <button class="btn sm menu-btn" id="menuBtn" aria-label="Menüyü aç">☰ Menü</button>
+      <label class="search" for="q"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="Personel, oda, form ara…"></label>
+      <div class="meta">
+        <span class="demo-tag">Prototip · örnek veri</span>
+        <span class="hide-sm muted mono" id="clock">06.10.2026 · 09:41</span>
+        <span class="chip-shift hide-sm">Sabah vardiyası</span>
+        <div class="avatar" title="Genel Müdür">GM</div>
+      </div>
+    </div>
+
+    <!-- 1. GÖSTERGE PANELİ -->
+    <section class="view" id="v-panel">
+      <div class="head"><div><span class="eyebrow">Salı, 6 Ekim 2026</span><h1>Günaydın, otel bugün böyle</h1><p>Genel müdür görünümü. Her kart ilgili modüle bağlanır; kırmızı çizgi hemen ilgilenilmesi gereken konuları gösterir.</p></div>
+        <div class="actions"><button class="btn" data-go="rapor">Günlük raporu aç</button><button class="btn primary" data-go="qr">QR kiosk ekranı</button></div></div>
+      <div class="kpis">
+        <div class="kpi"><span class="eyebrow">İçerideki personel</span><span class="v">42<small> / 58</small></span><span class="d">Vardiyada olması gereken: 44</span></div>
+        <div class="kpi warn"><span class="eyebrow">Geç kalan</span><span class="v">3</span><span class="d">Ort. gecikme 14 dk</span></div>
+        <div class="kpi alert"><span class="eyebrow">İmza bekleyen</span><span class="v">17</span><span class="d">6 personel · 4 doküman</span></div>
+        <div class="kpi"><span class="eyebrow">Hazır oda</span><span class="v">96<small> / 120</small></span><span class="d">11 kontrol bekliyor</span></div>
+        <div class="kpi alert"><span class="eyebrow">Açık arıza</span><span class="v">5</span><span class="d">1 tanesi SLA dışında</span></div>
+        <div class="kpi warn"><span class="eyebrow">Açık şikâyet</span><span class="v">2</span><span class="d">Bugün açılan: 1</span></div>
+      </div>
+      <div class="grid g-main">
+        <div class="panel"><header><h2>Departman bazlı günlük uyum</h2><span class="right muted" style="font-size:.78rem">checklist · imza · mesai</span></header>
+          <div class="body" id="deptCompliance"></div></div>
+        <div class="panel"><header><h2>Dikkat gerektirenler</h2></header>
+          <div class="list">
+            <div class="row"><span class="sev bad"></span><div><div class="t">Oda 412 · klima arızası</div><div class="s">SLA 4 saat · 5 sa 20 dk geçti · Teknik</div></div><button class="btn sm end" data-go="ariza">Aç</button></div>
+            <div class="row"><span class="sev bad"></span><div><div class="t">Mutfak soğuk oda sıcaklık kaydı eksik</div><div class="s">06:00 ölçümü girilmedi · F&amp;B</div></div><button class="btn sm end" data-go="checklist">Aç</button></div>
+            <div class="row"><span class="sev warn"></span><div><div class="t">Elif Karaca · sağlık raporu süresi doluyor</div><div class="s">Özlük · 9 gün kaldı</div></div><button class="btn sm end" data-go="ozluk">Aç</button></div>
+            <div class="row"><span class="sev warn"></span><div><div class="t">Misafir şikâyeti · Oda 208 gürültü</div><div class="s">Ön Büro · 1 sa 05 dk önce</div></div><button class="btn sm end" data-go="sikayet">Aç</button></div>
+            <div class="row"><span class="sev info"></span><div><div class="t">2 yeni personel oryantasyonda</div><div class="s">Lojman talimatı imzası bekleniyor</div></div><button class="btn sm end" data-go="surec">Aç</button></div>
+          </div></div>
+      </div>
+      <div class="grid g2">
+        <div class="panel"><header><h2>Son QR hareketleri</h2><button class="btn sm right" data-go="qr">Tümü</button></header><div class="tbl-wrap"><table id="lastMoves"></table></div></div>
+        <div class="panel"><header><h2>Vardiya teslim notları</h2><button class="btn sm right" data-go="teslim">Tümü</button></header>
+          <div class="list">
+            <div class="row"><span class="sev info"></span><div><div class="t">Ön Büro · Gece → Sabah</div><div class="s">3 geç çıkış talebi onaylandı, kasa farkı yok, 2 VIP giriş 14:00.</div></div><span class="end mono muted" style="font-size:.75rem">07:02</span></div>
+            <div class="row"><span class="sev warn"></span><div><div class="t">Teknik · Gece → Sabah</div><div class="s">Jeneratör test edildi. 412 klima kompresör sesi, parça bekleniyor.</div></div><span class="end mono muted" style="font-size:.75rem">07:10</span></div>
+            <div class="row"><span class="sev ok"></span><div><div class="t">Housekeeping · Akşam → Gece</div><div class="s">Kat 3 tamam. Çamaşırhane teslimi 22:40'ta yapıldı.</div></div><span class="end mono muted" style="font-size:.75rem">23:05</span></div>
+          </div></div>
+      </div>
+    </section>
+
+    <!-- 2. QR MESAİ -->
+    <section class="view" id="v-qr">
+      <div class="head"><div><span class="eyebrow">Mesai takibi</span><h1>QR ile giriş / çıkış</h1><p>Personel girişindeki tablette her 15 saniyede yenilenen bir QR kod durur. Personel kendi telefonuyla okutur. Kod sürekli değiştiği için fotoğrafı çekilip evden okutulamaz. Telefonu olmayan personel için kişisel QR kartı kiosk kamerasına okutulur.</p></div></div>
+      <div class="grid g3">
+        <div class="kiosk"><span class="eyebrow" style="color:var(--side-muted)">Personel girişi · Kiosk 1</span>
+          <canvas id="qrCanvas" width="220" height="220" aria-label="Dönen QR kod"></canvas>
+          <div class="ring"><i id="qrRing" style="width:100%"></i></div>
+          <span class="cd" id="qrCd">Kod 15 sn sonra yenilenecek</span>
+          <b style="font-family:var(--f-display);font-size:1.25rem">Telefonunla okut</b>
+          <span class="mono" style="font-size:.8rem;color:var(--side-muted)" id="kioskClock">09:41:00</span>
+        </div>
+        <div class="phone"><div class="notch"></div><div class="scr" id="phoneScr"></div></div>
+        <div class="panel"><header><h2>Okutunca ne olur?</h2></header><div class="body">
+          <ol class="flow stack">
+            <li>Personel QR'ı okutur. Kendi hesabıyla giriş yapılmış telefon gerekir.</li>
+            <li>Sistem kodun geçerli olduğunu, otel Wi-Fi'ı veya konumu ve cihazı doğrular.</li>
+            <li>Giriş veya çıkış kaydı saniyesiyle yazılır, o günkü vardiya ile karşılaştırılır.</li>
+            <li>Gecikme, erken çıkış ve fazla mesai otomatik hesaplanır, yöneticiye bildirim gider.</li>
+            <li>Ay sonunda puantaj bordro programına Excel olarak aktarılır.</li>
+          </ol></div></div>
+      </div>
+      <div class="panel"><header><h2>Bugünkü mesai kayıtları</h2><div class="right"><span class="pill ok">Zamanında</span><span class="pill warn">Geç</span><span class="pill bad">Gelmedi</span></div></header>
+        <div class="tbl-wrap"><table id="attTable"></table></div></div>
+    </section>
+
+    <!-- 3. VARDİYA -->
+    <section class="view" id="v-vardiya">
+      <div class="head"><div><span class="eyebrow">41. hafta · 5–11 Ekim 2026</span><h1>Haftalık vardiya planı</h1><p>Departman müdürü planı hazırlar, İK onaylar, yayınlanınca personelin telefonuna bildirim gider. Hücreye tıklayarak vardiya türünü değiştirebilirsiniz.</p></div>
+        <div class="actions"><button class="btn">← Önceki hafta</button><button class="btn">Geçen haftayı kopyala</button><button class="btn primary" id="publishShift">Planı yayınla</button></div></div>
+      <div class="legend"><span class="sh S">S 07–15</span><span class="sh A">A 15–23</span><span class="sh G">G 23–07</span><span class="sh R">R 09–18</span><span class="sh I">İzin</span><span>· Haftalık yasal sınır 45 saat, aşımlar kırmızı gösterilir.</span></div>
+      <div class="panel"><div class="tbl-wrap"><table class="shift-grid" id="shiftTable"></table></div></div>
+    </section>
+
+    <!-- 4. DOKÜMAN & İMZA -->
+    <section class="view" id="v-dokuman">
+      <div class="head"><div><span class="eyebrow">Doküman ve imza takibi</span><h1>Kurallar, talimatlar ve formlar</h1><p>Her doküman versiyonlu tutulur. Kimlerin imzalaması gerektiği tanımlanır. Personel telefonundan okuyup imzalar; tarih, saat, cihaz ve IP kaydı arşive yazılır. Doküman güncellenince yeniden imza istenir.</p></div>
+        <div class="actions"><button class="btn">Islak imzalı tarama yükle</button><button class="btn primary">Yeni doküman</button></div></div>
+      <div class="tabs" id="docTabs"><button class="on" data-t="el">Otel El Kitabı (20 bölüm)</button><button data-t="form">İşe giriş formları</button><button data-t="matris">İmza matrisi</button></div>
+      <div class="grid g-main" id="docMain">
+        <div class="panel"><div class="list doc-list" id="docList"></div></div>
+        <div class="panel"><header><h2>İmza durumu</h2></header><div class="body" style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:16px;align-items:center"><svg width="96" height="96" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--line)" stroke-width="3.5"/><circle id="donut" cx="18" cy="18" r="15.9" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-dasharray="0 100" transform="rotate(-90 18 18)" stroke-linecap="round"/></svg>
+            <div><div class="kpi" style="border:0;padding:0"><span class="v" id="sigPct">–</span><span class="d" id="sigTxt"></span></div></div></div>
+          <div class="eyebrow">En çok bekleyen personel</div>
+          <div class="list" style="margin:0 -16px" id="pendingPeople"></div>
+          <button class="btn" id="remindBtn">Bekleyenlere hatırlatma gönder</button>
+        </div></div>
+      </div>
+      <div class="panel" id="matrixPanel" hidden><div class="tbl-wrap"><table id="matrix"></table></div></div>
+    </section>
+
+    <!-- 5. PERSONEL & ÖZLÜK -->
+    <section class="view" id="v-ozluk">
+      <div class="head"><div><span class="eyebrow">Personel kayıtları</span><h1>Personel ve özlük dosyası</h1><p>Özlük dosyası tek sayfada toplanır: kimlik, SGK, sözleşme, evraklar, imzalar, eğitimler, mesai ve izin. Eksik ya da süresi dolan evrak otomatik uyarı üretir. Dosya PDF olarak tek tıkla çıktı alınabilir.</p></div>
+        <div class="actions"><button class="btn">Excel'e aktar</button><button class="btn primary" data-go="surec">Yeni personel</button></div></div>
+      <div class="grid g-main">
+        <div class="panel"><header><h2>Personel listesi</h2><span class="right muted" style="font-size:.78rem">58 aktif · 3 adayda · 1 çıkışta</span></header><div class="tbl-wrap"><table id="staffTable"></table></div></div>
+        <div class="panel" id="profile"></div>
+      </div>
+    </section>
+
+    <!-- 6. İŞE GİRİŞ / ÇIKIŞ -->
+    <section class="view" id="v-surec">
+      <div class="head"><div><span class="eyebrow">İşe giriş ve işten çıkış</span><h1>Süreç takibi</h1><p>Her yeni personel aynı adımlardan geçer. Bir adım tamamlanmadan sonraki açılmaz; örneğin oryantasyon formu imzalanmadan QR mesai hesabı aktif olmaz.</p></div>
+        <div class="actions"><button class="btn primary">Aday ekle</button></div></div>
+      <div class="tabs" id="procTabs"><button class="on" data-t="giris">İşe giriş</button><button data-t="cikis">İşten çıkış</button></div>
+      <div class="kanban" id="kanban"></div>
+    </section>
+
+    <!-- 7. LOJMAN -->
+    <section class="view" id="v-lojman">
+      <div class="head"><div><span class="eyebrow">Lojman</span><h1>Lojman yerleşimi ve talimatlar</h1><p>Oda bazında kimin kaldığı, zimmetli eşyalar, lojman talimatı imzası ve aylık lojman denetimi tek ekranda.</p></div></div>
+      <div class="grid g3" id="lojmanGrid"></div>
+    </section>
+
+    <!-- 8. CHECKLIST -->
+    <section class="view" id="v-checklist">
+      <div class="head"><div><span class="eyebrow">Günlük checklistler</span><h1>Bugünün kontrol listeleri</h1><p>Her madde kimin, ne zaman işaretlediği ile kaydedilir. Fotoğraf veya ölçüm değeri istenebilir. Saatinde tamamlanmayan liste yöneticiye düşer.</p></div></div>
+      <div class="tabs" id="clTabs"></div>
+      <div class="grid g-main">
+        <div class="panel"><header><h2 id="clTitle"></h2><span class="right"><span class="pill info" id="clPct"></span></span></header><div id="clItems"></div></div>
+        <div class="panel"><header><h2>Departman tamamlanma</h2></header><div class="body" id="clSummary"></div></div>
+      </div>
+    </section>
+
+    <!-- 9. VARDİYA TESLİM -->
+    <section class="view" id="v-teslim">
+      <div class="head"><div><span class="eyebrow">Vardiya teslimleri</span><h1>Vardiya teslim defteri</h1><p>Kâğıt deftere yazılan teslim notları artık standart formda. Teslim eden ve alan iki taraf da onaylar; açık kalan işler bir sonraki vardiyaya görev olarak düşer.</p></div>
+        <div class="actions"><button class="btn primary">Teslim formu doldur</button></div></div>
+      <div class="grid g2">
+        <div class="panel"><header><h2>Ön Büro · Gece → Sabah</h2><span class="right pill ok">İki taraf onayladı</span></header><div class="body">
+          <dl class="dl"><div><dt>Teslim eden</dt><dd>Burak Şahin · 07:02</dd></div><div><dt>Teslim alan</dt><dd>Selin Aydın · 07:06</dd></div>
+          <div><dt>Doluluk</dt><dd class="mono">%82 · 98 oda</dd></div><div><dt>Kasa devri</dt><dd class="mono">₺ 18.450,00 · fark yok</dd></div>
+          <div><dt>Beklenen giriş</dt><dd class="mono">34 (2 VIP)</dd></div><div><dt>Beklenen çıkış</dt><dd class="mono">27</dd></div></dl>
+          <div class="eyebrow" style="margin-top:14px">Açık işler</div>
+          <div class="checks"><div class="ci">Oda 305 bebek yatağı 14:00'e kadar</div><div class="ci">Acenta faturası (Tatilsepeti) mail beklemede</div><div class="ci">208 gürültü şikâyeti için geri dönüş</div></div>
+        </div></div>
+        <div class="panel"><header><h2>Geçmiş teslimler</h2></header><div class="tbl-wrap"><table>
+          <tr><th>Tarih</th><th>Departman</th><th>Vardiya</th><th>Durum</th></tr>
+          <tr><td class="mono">06.10 07:02</td><td>Ön Büro</td><td>G → S</td><td><span class="pill ok">Onaylı</span></td></tr>
+          <tr><td class="mono">06.10 07:10</td><td>Teknik</td><td>G → S</td><td><span class="pill warn">1 açık iş</span></td></tr>
+          <tr><td class="mono">05.10 23:05</td><td>Housekeeping</td><td>A → G</td><td><span class="pill ok">Onaylı</span></td></tr>
+          <tr><td class="mono">05.10 23:01</td><td>Ön Büro</td><td>A → G</td><td><span class="pill ok">Onaylı</span></td></tr>
+          <tr><td class="mono">05.10 15:12</td><td>Mutfak</td><td>S → A</td><td><span class="pill bad">Alan onaylamadı</span></td></tr>
+        </table></div></div>
+      </div>
+    </section>
+
+    <!-- 10. ODA KONTROL -->
+    <section class="view" id="v-oda">
+      <div class="head"><div><span class="eyebrow">Oda kontrol sistemi</span><h1>Oda durumu</h1><p>Kat görevlisi odayı bitirince telefondan "temiz" işaretler, supervisor 25 maddelik oda kontrol formuyla onaylar. Bulunan arıza tek dokunuşla teknik servise iş emri olarak düşer.</p></div></div>
+      <div class="legend"><span class="room temiz">Temiz</span><span class="room kontrol">Kontrol bekliyor</span><span class="room kirli">Kirli</span><span class="room dolu">Dolu</span><span class="room ariza">Arızalı</span></div>
+      <div class="grid g-main">
+        <div class="panel"><div class="body"><div class="floors" id="floors"></div></div></div>
+        <div class="panel" id="roomDetail"></div>
+      </div>
+    </section>
+
+    <!-- 11. TEKNİK ARIZA -->
+    <section class="view" id="v-ariza">
+      <div class="head"><div><span class="eyebrow">Teknik, bakım ve tesis</span><h1>Arıza ve iş emirleri</h1><p>Her departman arıza bildirebilir. Teknik şef atar, teknisyen fotoğrafla kapatır. Öncelik seviyesine göre çözüm süresi (SLA) izlenir. Periyodik bakımlar takvimden otomatik oluşur.</p></div>
+        <div class="actions"><button class="btn primary">Arıza bildir</button></div></div>
+      <div class="panel"><div class="tbl-wrap"><table id="faultTable"></table></div></div>
+    </section>
+
+    <!-- 12. ŞİKÂYET -->
+    <section class="view" id="v-sikayet">
+      <div class="head"><div><span class="eyebrow">Misafir yönetimi</span><h1>Misafir şikâyetleri</h1><p>Şikâyet; kaynak, kategori, sorumlu departman ve telafi ile kayda alınır. Misafire geri dönüş yapılmadan kapatılamaz. Tekrar eden konular aylık raporda kök neden analizine gider.</p></div>
+        <div class="actions"><button class="btn primary">Şikâyet kaydet</button></div></div>
+      <div class="grid g-main">
+        <div class="panel"><div class="list" id="complaints"></div></div>
+        <div class="panel"><header><h2>Son 30 gün · kategori</h2></header><div class="body" id="compCat"></div></div>
+      </div>
+    </section>
+
+    <!-- 13. EĞİTİM -->
+    <section class="view" id="v-egitim">
+      <div class="head"><div><span class="eyebrow">Eğitim ve yetkinlik</span><h1>Eğitim kayıtları</h1><p>Zorunlu eğitimler (İSG, yangın, hijyen, KVKK) geçerlilik süresiyle izlenir. Eğitim sonrası katılım tutanağı sistemde imzalanır, yetkinlik seviyesi departman şefi tarafından puanlanır.</p></div>
+        <div class="actions"><button class="btn primary">Eğitim planla</button></div></div>
+      <div class="panel"><div class="tbl-wrap"><table id="trainTable"></table></div></div>
+    </section>
+
+    <!-- 14. RAPORLAR -->
+    <section class="view" id="v-rapor">
+      <div class="head"><div><span class="eyebrow">Yönetici raporları</span><h1>Günlük ve haftalık rapor</h1><p>Rapor, sistemdeki kayıtlardan otomatik dolar. Departman müdürü yalnızca yorum ve aksiyon ekleyip onaylar. Genel müdüre her sabah 08:30'da e-posta ile gider.</p></div>
+        <div class="actions"><button class="btn">PDF indir</button><button class="btn primary">Raporu onayla</button></div></div>
+      <div class="grid g2">
+        <div class="panel"><header><h2>Son 7 gün · mesai uyumu</h2><span class="right muted" style="font-size:.78rem">% zamanında giriş</span></header><div class="body"><svg class="chart" id="attChart" viewBox="0 0 520 210" role="img" aria-label="Son 7 gün zamanında giriş oranı"></svg></div></div>
+        <div class="panel"><header><h2>Haftalık özet</h2></header><div class="tbl-wrap"><table>
+          <tr><th>Gösterge</th><th>Bu hafta</th><th>Geçen hafta</th><th>Durum</th></tr>
+          <tr><td>Toplam fazla mesai</td><td class="num">62 sa</td><td class="num">48 sa</td><td><span class="pill warn">Arttı</span></td></tr>
+          <tr><td>Checklist tamamlanma</td><td class="num">%91</td><td class="num">%87</td><td><span class="pill ok">İyi</span></td></tr>
+          <tr><td>Ort. arıza çözüm süresi</td><td class="num">3 sa 10 dk</td><td class="num">4 sa 40 dk</td><td><span class="pill ok">İyi</span></td></tr>
+          <tr><td>Misafir şikâyeti</td><td class="num">6</td><td class="num">4</td><td><span class="pill warn">Arttı</span></td></tr>
+          <tr><td>Oda kontrol hata oranı</td><td class="num">%4,2</td><td class="num">%5,8</td><td><span class="pill ok">İyi</span></td></tr>
+          <tr><td>Bekleyen imza</td><td class="num">17</td><td class="num">9</td><td><span class="pill bad">Dikkat</span></td></tr>
+        </table></div></div>
+      </div>
+      <div class="panel"><header><h2>Departman müdürü notları</h2></header><div class="list">
+        <div class="row"><span class="sev warn"></span><div><div class="t">F&amp;B Müdürü · Fazla mesai</div><div class="s">Hafta sonu düğün organizasyonu nedeniyle servis ekibinde 28 saat fazla mesai. Gelecek organizasyon için 2 ekstra personel talep ediliyor.</div></div></div>
+        <div class="row"><span class="sev ok"></span><div><div class="t">Housekeeping Müdürü · Oda kontrol</div><div class="s">Yeni kontrol formuyla hata oranı düştü. En sık hata: banyo silikon ve minibar eksikleri.</div></div></div>
+      </div></div>
+    </section>
+
+    <!-- 15. PERSONEL MOBİL -->
+    <section class="view" id="v-mobil">
+      <div class="head"><div><span class="eyebrow">Personelin gördüğü ekran</span><h1>Personel mobil uygulaması</h1><p>Personel ayrı bir uygulama indirmez. Web sayfası telefonun ana ekranına eklenir. Kendi vardiyasını, imza bekleyen dokümanları, görevlerini ve mesai özetini görür.</p></div></div>
+      <div class="grid g3">
+        <div class="phone"><div class="notch"></div><div class="scr">
+          <div style="display:flex;gap:10px;align-items:center"><div class="avatar">AY</div><div><b>Ayşe Yıldız</b><div class="muted" style="font-size:.75rem">Kat Görevlisi · Housekeeping</div></div></div>
+          <div class="panel" style="padding:10px"><div class="eyebrow">Bugünkü vardiya</div><b class="mono">07:00 – 15:00</b><div class="muted" style="font-size:.75rem">Giriş: 06:52 ✓</div></div>
+          <button class="btn primary" style="justify-content:center" data-go="qr">QR okut · Çıkış yap</button>
+          <div class="panel" style="padding:10px;border-color:var(--bad)"><div class="eyebrow" style="color:var(--bad)">2 doküman imza bekliyor</div><div style="font-size:.8rem">Lojman Talimatı v3<br>KVKK Bilgi Güvenliği</div><button class="btn sm" style="margin-top:6px" data-sign="2">Oku ve imzala</button></div>
+          <div class="panel" style="padding:10px"><div class="eyebrow">Görevlerim</div><div style="font-size:.8rem">Kat 3 · 14 oda (9 tamam)<br>Kat 3 koridor checklist</div></div>
+        </div></div>
+        <div class="phone"><div class="notch"></div><div class="scr">
+          <b style="font-family:var(--f-display)">Bu haftaki vardiyam</b>
+          <div class="checks" id="myWeek"></div>
+          <div class="panel" style="padding:10px"><div class="eyebrow">Ekim mesai özeti</div><div class="mono" style="font-size:.8rem">Çalışılan: 38 sa 20 dk<br>Fazla mesai: 1 sa 15 dk<br>Kalan yıllık izin: 9 gün</div></div>
+          <button class="btn">İzin talebi oluştur</button>
+        </div></div>
+        <div class="phone"><div class="notch"></div><div class="scr">
+          <b style="font-family:var(--f-display)">Oda 307 · Kontrol</b>
+          <div class="muted" style="font-size:.75rem">Supervisor formu · 25 madde</div>
+          <div class="checks">
+            <div class="ci"><span class="ico-ok">✓</span> Yatak ve nevresim</div>
+            <div class="ci"><span class="ico-ok">✓</span> Banyo, havlu seti</div>
+            <div class="ci"><span class="ico-no">✗</span> Minibar eksik: 2 su</div>
+            <div class="ci"><span class="ico-ok">✓</span> Klima, TV, aydınlatma</div>
+            <div class="ci"><span class="ico-wait">!</span> Perde rayı gevşek</div>
+          </div>
+          <button class="btn sm">📷 Fotoğraf ekle</button>
+          <button class="btn primary sm">Teknik servise bildir</button>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 16. PROJE ÇALIŞMASI -->
+    <section class="view" id="v-calisma">
+      <div class="study">
+        <div class="head"><div><span class="eyebrow">Proje çalışması · Ekim 2026</span><h1>Oscar Personel: nasıl bir yazılım olacak?</h1></div></div>
+        <p class="lead">Tarayıcıdan çalışan tek bir web platformu. Yöneticiler bilgisayardan, personel telefondan kullanır. Otelin bugün kâğıtla, defterle ve WhatsApp gruplarıyla yürüyen tüm personel ve operasyon kayıtları burada toplanır: kim ne zaman geldi, hangi kuralı imzaladı, hangi oda kontrol edildi, hangi arıza kaç saatte kapandı.</p>
+
+        <div><h2>Kim ne görecek?</h2>
+        <div class="panel" style="margin-top:10px"><div class="tbl-wrap"><table>
+          <tr><th>Rol</th><th>Ne yapar</th><th>Cihaz</th></tr>
+          <tr><td><b>Genel Müdür</b></td><td>Tüm oteli görür, raporları onaylar, dokümanları yayınlar.</td><td>Bilgisayar, telefon</td></tr>
+          <tr><td><b>İnsan Kaynakları</b></td><td>Personel kaydı, özlük, işe giriş ve çıkış, puantaj, eğitim planı.</td><td>Bilgisayar</td></tr>
+          <tr><td><b>Departman Müdürü / Şef</b></td><td>Kendi ekibinin vardiyası, checklistleri, teslimleri, raporu.</td><td>Bilgisayar, tablet</td></tr>
+          <tr><td><b>Personel</b></td><td>QR ile giriş ve çıkış, imza, kendi vardiyası, görevleri, izin talebi.</td><td>Telefon</td></tr>
+          <tr><td><b>Kiosk</b></td><td>Personel girişindeki tablet. Dönen QR kodu gösterir.</td><td>Tablet</td></tr>
+        </table></div></div></div>
+
+        <div><h2>Modül haritası</h2><p class="muted">İstediğiniz tüm bölümler altı ana modülde toplanıyor.</p>
+        <div class="modmap">
+          <div class="mod"><span class="tag">MODÜL 1</span><h3>Personel ve İK</h3><ul><li>Personel kayıtları</li><li>Özlük dosyası (PDF çıktı)</li><li>İşe giriş ve çıkış süreci</li><li>Lojman yerleşimi ve zimmet</li><li>İzin talepleri</li></ul></div>
+          <div class="mod"><span class="tag">MODÜL 2</span><h3>Mesai ve Vardiya</h3><ul><li>QR ile giriş ve çıkış</li><li>Haftalık shift planı</li><li>Gecikme ve fazla mesai</li><li>Aylık puantaj, bordroya aktarım</li></ul></div>
+          <div class="mod"><span class="tag">MODÜL 3</span><h3>Doküman ve İmza</h3><ul><li>Otel El Kitabı, 20 bölüm</li><li>Oryantasyon ve bilgilendirme formları</li><li>Lojman talimatı, otel genel kuralları</li><li>Versiyon ve yeniden imza takibi</li></ul></div>
+          <div class="mod"><span class="tag">MODÜL 4</span><h3>Günlük Operasyon</h3><ul><li>Günlük checklistler</li><li>Vardiya teslimleri</li><li>Oda kontrol sistemi</li><li>Teknik arıza ve bakım</li><li>Misafir şikâyetleri</li></ul></div>
+          <div class="mod"><span class="tag">MODÜL 5</span><h3>Eğitim ve Yetkinlik</h3><ul><li>Zorunlu eğitim takibi</li><li>Katılım tutanakları</li><li>Yetkinlik puanlaması</li><li>Süresi dolan sertifika uyarısı</li></ul></div>
+          <div class="mod"><span class="tag">MODÜL 6</span><h3>Raporlama ve Denetim</h3><ul><li>Günlük ve haftalık yönetici raporu</li><li>Departman uyum skoru</li><li>İç denetim ve aksiyon takibi</li><li>"Otel bugün çalışır durumda mı" kontrolü</li></ul></div>
+        </div></div>
+
+        <div><h2>Otel El Kitabı: 20 bölüm nasıl işlenecek?</h2>
+        <p>Gönderdiğiniz başlıkların her biri sistemde bir <b>doküman</b> olur. Her dokümanın bir kodu (ör. <span class="doc-code">OSC-EK-05</span>), versiyonu, yürürlük tarihi ve "kimler imzalayacak" listesi vardır. Bir bölüm sadece metin değildir: içindeki formlar ve checklistler, Modül 4'teki günlük kayıtlara bağlanır. Örneğin "Housekeeping Operasyonu" bölümü imzalanır, içindeki oda kontrol formu da her gün Oda Kontrol ekranında kullanılır.</p>
+        <div class="note"><b>İmza hakkında:</b> Telefonda "okudum, anladım" onayı ve parmakla imza; tarih, saat, cihaz ve IP bilgisiyle birlikte iç talimat ve bilgilendirme belgeleri için yeterli bir kayıt oluşturur. İş sözleşmesi, ibraname gibi hukuki ağırlığı yüksek belgeler için ıslak imzalı kâğıt taranıp özlüğe yüklenir veya nitelikli elektronik imza kullanılır. Hangi belgenin hangi yöntemle imzalanacağını iş hukuku danışmanınızla netleştirmenizi öneririz.</div></div>
+
+        <div><h2>QR mesai sistemi nasıl çalışacak?</h2>
+        <ol class="flow" style="margin-top:10px">
+          <li>Personel girişine bir tablet konur, ekranda her 15 saniyede değişen QR kod döner.</li>
+          <li>Personel kendi telefonuyla okutur. İlk girişte telefonu hesabına bir kez tanımlanır.</li>
+          <li>Sistem otel Wi-Fi'ına veya konuma bakar. Başkasının yerine okutmayı engeller.</li>
+          <li>Kayıt vardiya planıyla eşleşir: geç kalma, erken çıkış ve fazla mesai hesaplanır.</li>
+          <li>Ay sonu puantaj Excel olarak bordro programına aktarılır.</li>
+        </ol>
+        <p class="muted" style="margin-top:8px">Telefonu olmayan personel için kişisel QR'lı yaka kartı verilir, kiosk tabletin kamerası kartı okur.</p></div>
+
+        <div><h2>Teknik yapı</h2>
+        <div class="arch" style="margin-top:10px">
+          <div class="box"><b>Telefon ve bilgisayar</b>Tarayıcıdan açılır, ana ekrana eklenebilir. Ayrı uygulama mağazası gerekmez.</div><span class="arrow">→</span>
+          <div class="box"><b>Web uygulaması</b>Python Django. Rol bazlı yetki, Türkçe arayüz, hazır yönetim paneli.</div><span class="arrow">→</span>
+          <div class="box"><b>Veritabanı ve dosya arşivi</b>PostgreSQL. İmzalı PDF'ler, evrak taramaları, fotoğraflar.</div><span class="arrow">→</span>
+          <div class="box"><b>Bildirimler</b>E-posta, SMS veya WhatsApp ile hatırlatma ve uyarılar.</div>
+        </div>
+        <p style="margin-top:10px">Özlük verisi, sağlık raporu ve adli sicil kaydı KVKK kapsamında özel nitelikli kişisel veri içerir. Bu yüzden sunucu Türkiye'de veya KVKK'ya uygun bir yerde barındırılır. Her kayda kimin baktığı loglanır. Personel sadece kendi verisini, müdür sadece kendi departmanını görür.</p></div>
+
+        <div><h2>Yol haritası</h2><p class="muted">Süreler tahminidir. Kesinleşmesi için aşağıdaki soruların cevabı gerekir.</p>
+        <div class="phases">
+          <div class="phase"><b>Faz 1 · Temel</b><span class="muted mono">~4 hafta</span><ul><li>Personel kaydı ve özlük</li><li>Doküman ve imza (20 bölüm + formlar)</li><li>QR mesai, kiosk</li><li>Rol ve yetkiler</li></ul></div>
+          <div class="phase"><b>Faz 2 · Vardiya</b><span class="muted mono">~3 hafta</span><ul><li>Haftalık shift planı</li><li>Puantaj, bordro aktarımı</li><li>İşe giriş ve çıkış süreci</li><li>Lojman</li></ul></div>
+          <div class="phase"><b>Faz 3 · Operasyon</b><span class="muted mono">~4 hafta</span><ul><li>Checklistler, vardiya teslim</li><li>Oda kontrol</li><li>Teknik arıza</li><li>Misafir şikâyeti</li></ul></div>
+          <div class="phase"><b>Faz 4 · Raporlama</b><span class="muted mono">~3 hafta</span><ul><li>Eğitim ve yetkinlik</li><li>Yönetici raporları</li><li>İç denetim</li><li>PMS entegrasyonu (isteğe bağlı)</li></ul></div>
+        </div></div>
+
+        <div><h2>Netleştirmemiz gerekenler</h2>
+        <ol class="qs" style="margin-top:10px">
+          <li>Kaç personel ve kaç departman var? Sezonluk personel dalgalanması ne kadar?</li>
+          <li>Personel girişi kaç noktadan? Kaç kiosk tableti gerekir?</li>
+          <li>Personelin ne kadarının akıllı telefonu var?</li>
+          <li>Bordro hangi programla yapılıyor (Logo, Mikro, Netsis, muhasebe firması)?</li>
+          <li>Otelde kullanılan PMS hangisi (Elektra, Opera, HotelRunner vb.)?</li>
+          <li>20 bölümün metinleri hazır mı, yoksa sistemle birlikte mi yazılacak?</li>
+          <li>Tek otel mi, ileride birden fazla tesis mi olacak?</li>
+          <li>Arayüz sadece Türkçe mi, yabancı personel için İngilizce de gerekli mi?</li>
+        </ol></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <header><span class="doc-code" id="mCode"></span><h2 id="mTitle"></h2><button class="btn sm" style="margin-left:auto" id="mClose">Kapat</button></header>
+  <div class="content">
+    <div class="muted" style="font-size:.8rem" id="mMeta"></div>
+    <div class="doc-text" id="mText"></div>
+    <label class="chk" for="mRead"><input type="checkbox" id="mRead"><span>Bu dokümanı okudum, anladım ve kurallara uyacağımı kabul ediyorum.</span></label>
+    <div><div class="eyebrow" style="margin-bottom:6px">İmza · parmağınızla veya fareyle çizin</div><canvas class="sigpad" id="sigpad"></canvas></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="sigClear">Temizle</button><button class="btn primary" id="sigOk" disabled>İmzala</button></div>
+    <div id="mStamp" hidden></div>
+  </div>
+</div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const ic={
+ home:'<path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/>',qr:'<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2"/>',
+ cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',doc:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',flow:'<path d="M4 6h10M4 12h16M4 18h7"/><circle cx="18" cy="6" r="2"/><circle cx="15" cy="18" r="2"/>',
+ bed:'<path d="M3 18V7M3 13h18v5M21 13a3 3 0 0 0-3-3h-7v3"/><circle cx="7" cy="10.5" r="1.5"/>',check:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="m8 12 3 3 5-6"/>',
+ swap:'<path d="M4 8h14l-3-3M20 16H6l3 3"/>',door:'<path d="M6 21V3h12v18M4 21h16"/><circle cx="14.5" cy="12" r=".8"/>',
+ wrench:'<path d="M14 6a4 4 0 0 0 5 5l-9 9-3-3 9-9a4 4 0 0 0-2-2z"/>',chat:'<path d="M4 5h16v11H9l-5 4z"/>',
+ cap:'<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',chart:'<path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3"/>',
+ phone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',book:'<path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-4"/>'};
+const NAV=[
+ ['Genel',[['panel','Gösterge paneli','home'],['calisma','Proje çalışması','book']]],
+ ['Personel ve İK',[['ozluk','Personel ve özlük','user'],['surec','İşe giriş / çıkış','flow',3],['lojman','Lojman','bed']]],
+ ['Mesai',[['qr','QR mesai takibi','qr'],['vardiya','Vardiya planı','cal']]],
+ ['Doküman',[['dokuman','Kurallar ve imzalar','doc',17,true],['egitim','Eğitim ve yetkinlik','cap']]],
+ ['Operasyon',[['checklist','Günlük checklist','check'],['teslim','Vardiya teslimi','swap'],['oda','Oda kontrol','door'],['ariza','Teknik arıza','wrench',5,true],['sikayet','Misafir şikâyeti','chat',2]]],
+ ['Yönetim',[['rapor','Yönetici raporları','chart'],['mobil','Personel mobil','phone']]]];
+$('#nav').innerHTML=NAV.map(([g,items])=>`<div class="nav-group"><span>${g}</span>${items.map(([id,l,i,c,h])=>`<button data-go="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ic[i]}</svg>${l}${c?`<span class="count${h?' hot':''}">${c}</span>`:''}</button>`).join('')}</div>`).join('');
+function go(id){ if(!$('#v-'+id)) id='panel';
+  $$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+id));
+  $$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+  $('#side').classList.remove('open'); window.scrollTo(0,0);
+  try{history.replaceState(null,'','#'+id)}catch(e){} }
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]'); if(g){go(g.dataset.go)} const s=e.target.closest('[data-sign]'); if(s) openDoc(+s.dataset.sign,FORMS)});
+$('#menuBtn').onclick=()=>$('#side').classList.toggle('open');
+function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+const ini=n=>n.split(' ').map(x=>x[0]).join('').slice(0,2);
+
+/* ---------- örnek veri ---------- */
+const STAFF=[
+ ['Selin Aydın','Ön Büro','Resepsiyon Şefi','2021-04-12','S'],['Burak Şahin','Ön Büro','Gece Resepsiyonisti','2023-06-01','G'],['Deniz Koç','Ön Büro','Resepsiyonist','2025-05-20','A'],
+ ['Ayşe Yıldız','Housekeeping','Kat Görevlisi','2022-03-15','S'],['Elif Karaca','Housekeeping','Kat Supervisoru','2019-09-02','S'],['Fatma Demir','Housekeeping','Kat Görevlisi','2026-09-28','S'],['Hasan Öztürk','Housekeeping','Çamaşırhane','2024-01-10','A'],
+ ['Murat Çelik','F&B Servis','Restoran Şefi','2020-05-05','S'],['Zeynep Arslan','F&B Servis','Garson','2026-10-01','A'],['Can Yılmaz','F&B Servis','Barmen','2024-04-22','A'],
+ ['Kemal Aksoy','Mutfak','Aşçıbaşı','2018-02-01','S'],['Gökhan Er','Mutfak','Aşçı','2023-03-03','A'],
+ ['Okan Tekin','Teknik','Teknik Şef','2017-11-20','R'],['Serkan Uçar','Teknik','Teknisyen','2022-08-08','G'],
+ ['Mehmet Kaya','Güvenlik','Güvenlik Görevlisi','2021-12-01','G'],['Nur Polat','İK','İK Uzmanı','2020-01-15','R']];
+
+/* Panel: departman uyumu */
+const DEPTS=[['Ön Büro',96,100,94],['Housekeeping',88,82,97],['F&B Servis',79,71,90],['Mutfak',72,88,85],['Teknik',91,100,100],['Güvenlik',100,92,100]];
+$('#deptCompliance').innerHTML=`<div class="tbl-wrap"><table><tr><th>Departman</th><th>Checklist</th><th>İmza</th><th>Zamanında giriş</th></tr>${DEPTS.map(([d,a,b,c])=>`<tr><td><b>${d}</b></td>${[a,b,c].map(v=>`<td><div style="display:flex;gap:8px;align-items:center"><div class="bar${v<80?' brass':''}" style="flex:1"><i style="width:${v}%"></i></div><span class="num" style="width:34px;text-align:right;${v<80?'color:var(--warn);font-weight:600':''}">%${v}</span></div></td>`).join('')}</tr>`).join('')}</table></div>`;
+
+/* QR: mesai tablosu */
+const ATT=[['Ayşe Yıldız','Housekeeping','07:00–15:00','06:52','—','ok','Zamanında'],['Selin Aydın','Ön Büro','07:00–15:00','06:48','—','ok','Zamanında'],['Kemal Aksoy','Mutfak','06:00–14:00','05:55','—','ok','Zamanında'],['Elif Karaca','Housekeeping','07:00–15:00','07:18','—','warn','18 dk geç'],['Murat Çelik','F&B Servis','07:00–15:00','07:09','—','warn','9 dk geç'],['Burak Şahin','Ön Büro','23:00–07:00','22:51','07:24','ok','+24 dk fazla mesai'],['Serkan Uçar','Teknik','23:00–07:00','22:58','07:02','ok','Tamamlandı'],['Fatma Demir','Housekeeping','07:00–15:00','07:15','—','warn','15 dk geç'],['Okan Tekin','Teknik','09:00–18:00','—','—','bad','Henüz gelmedi']];
+function renderAtt(){ $('#attTable').innerHTML=`<tr><th>Personel</th><th>Departman</th><th>Planlanan</th><th>Giriş</th><th>Çıkış</th><th>Durum</th></tr>`+ATT.map(r=>`<tr><td><div class="who"><div class="avatar">${ini(r[0])}</div>${r[0]}</div></td><td>${r[1]}</td><td class="mono">${r[2]}</td><td class="mono">${r[3]}</td><td class="mono">${r[4]}</td><td><span class="pill ${r[5]}">${r[6]}</span></td></tr>`).join('');
+ $('#lastMoves').innerHTML=`<tr><th>Personel</th><th>Hareket</th><th>Saat</th><th></th></tr>`+ATT.filter(r=>r[3]!=='—').slice(0,5).map(r=>`<tr><td><div class="who"><div class="avatar">${ini(r[0])}</div>${r[0]}</div></td><td>${r[4]!=='—'?'Çıkış':'Giriş'}</td><td class="mono">${r[4]!=='—'?r[4]:r[3]}</td><td><span class="pill ${r[5]}">${r[5]==='ok'?'Uygun':'Geç'}</span></td></tr>`).join('');}
+renderAtt();
+
+/* QR kiosk: dönen kod (görsel temsil) */
+const cv=$('#qrCanvas'),cx=cv.getContext('2d');let seed=7,left=15;
+function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
+function drawQR(){const n=25,s=200/n;cx.fillStyle='#fff';cx.fillRect(0,0,220,220);cx.fillStyle='#10201C';
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++){const f=(x<7&&y<7)||(x>=n-7&&y<7)||(x<7&&y>=n-7);if(f)continue;if(rnd()>.52)cx.fillRect(10+x*s,10+y*s,s+.4,s+.4)}
+ [[0,0],[n-7,0],[0,n-7]].forEach(([a,b])=>{cx.fillRect(10+a*s,10+b*s,7*s,7*s);cx.fillStyle='#fff';cx.fillRect(10+(a+1)*s,10+(b+1)*s,5*s,5*s);cx.fillStyle='#10201C';cx.fillRect(10+(a+2)*s,10+(b+2)*s,3*s,3*s)});
+ cx.fillStyle='#B4862C';cx.fillRect(10+11*s,10+11*s,3*s,3*s);}
+drawQR();
+const pad=n=>String(n).padStart(2,'0');
+setInterval(()=>{left--;if(left<=0){left=15;seed=Math.floor(Math.random()*1e6)+1;drawQR()}
+ $('#qrRing').style.width=(left/15*100)+'%';$('#qrCd').textContent=`Kod ${left} sn sonra yenilenecek`;
+ const d=new Date();$('#kioskClock').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;},1000);
+let scanned=false;
+function phone(){ $('#phoneScr').innerHTML= scanned?
+ `<div style="text-align:center;padding-top:30px;display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center;font-size:2rem">✓</div><b style="font-family:var(--f-display);font-size:1.1rem">Giriş kaydedildi</b><span class="mono">Okan Tekin · ${$('#kioskClock').textContent}</span><span class="pill warn">Vardiya 09:00 · 41 dk geç</span><span class="muted" style="font-size:.75rem">Konum: Otel Wi-Fi ✓ · Cihaz tanımlı ✓</span><button class="btn sm" id="scanAgain">Yeniden dene</button></div>`:
+ `<div style="display:flex;gap:10px;align-items:center"><div class="avatar">OT</div><div><b>Okan Tekin</b><div class="muted" style="font-size:.75rem">Teknik Şef</div></div></div>
+  <div style="border:2px dashed var(--line);border-radius:12px;aspect-ratio:1;max-width:100%;display:grid;place-items:center;color:var(--muted);text-align:center;font-size:.8rem;padding:10px">Kamera açık<br>Kiosk ekranındaki QR'ı çerçeveye getir</div>
+  <button class="btn primary" style="justify-content:center" id="scanBtn">Okut (demo)</button><span class="muted" style="font-size:.72rem;text-align:center">Bugünkü vardiya: 09:00 – 18:00</span>`;
+ const b=$('#scanBtn');if(b)b.onclick=()=>{scanned=true;const r=ATT.find(a=>a[0]==='Okan Tekin');r[3]=$('#kioskClock').textContent.slice(0,5);r[5]='warn';r[6]='Geç giriş';renderAtt();phone();toast('Okan Tekin için giriş kaydı oluşturuldu')};
+ const a=$('#scanAgain');if(a)a.onclick=()=>{scanned=false;phone()};}
+phone();
+
+/* Vardiya */
+const SH={S:'07–15',A:'15–23',G:'23–07',R:'09–18',I:'İzin'},HRS={S:8,A:8,G:8,R:9,I:0},ORDER=['S','A','G','R','I'];
+const days=['Pzt 5','Sal 6','Çar 7','Per 8','Cum 9','Cmt 10','Paz 11'];
+const plan={};STAFF.forEach(([n,d,,,b],i)=>{plan[n]=days.map((_,j)=>((i+j)%7===0||(i+j)%7===3)?'I':(d==='Ön Büro'||d==='Güvenlik')&&j>3?ORDER[(ORDER.indexOf(b)+1)%3]:b)});
+plan['Can Yılmaz']=['A','A','A','A','A','A','R'];
+function renderShift(){let h=`<tr><th>Personel</th>${days.map(d=>`<th>${d}</th>`).join('')}<th>Saat</th></tr>`;let last='';
+ STAFF.forEach(([n,d])=>{if(d!==last){h+=`<tr class="dept-row"><td colspan="9">${d}</td></tr>`;last=d}const t=plan[n].reduce((a,c)=>a+HRS[c],0);
+ h+=`<tr><td><div class="who"><div class="avatar">${ini(n)}</div>${n}</div></td>${plan[n].map((c,j)=>`<td><button class="sh ${c}" data-n="${n}" data-j="${j}">${c==='I'?'İzin':c+' '+SH[c]}</button></td>`).join('')}<td class="num" style="${t>45?'color:var(--bad);font-weight:600':''}">${t}${t>45?' ⚠':''}</td></tr>`});
+ $('#shiftTable').innerHTML=h;}
+renderShift();
+$('#shiftTable').addEventListener('click',e=>{const b=e.target.closest('button.sh');if(!b)return;const a=plan[b.dataset.n];a[b.dataset.j]=ORDER[(ORDER.indexOf(a[b.dataset.j])+1)%ORDER.length];renderShift()});
+$('#publishShift').onclick=()=>toast('41. hafta planı yayınlandı · 16 personele bildirim gönderildi');
+$('#myWeek').innerHTML=plan['Ayşe Yıldız'].map((c,j)=>`<div class="ci"><span class="mono" style="width:52px">${days[j]}</span><span class="sh ${c}">${c==='I'?'İzin':SH[c]}</span></div>`).join('');
+
+/* Dokümanlar */
+const EK=['Sistemin Temel İlkeleri','Otel Yönetim Sistemi','Personel Sistemi','Ön Büro Operasyonu','Housekeeping Operasyonu','F&B ve Mutfak Operasyonu','Oda ve Genel Otel Kalite Standardı','Teknik, Bakım ve Tesis Yönetimi','Satın Alma, Depo ve Stok Yönetimi','Kasa, Ödeme ve Finansal Kontrol','Misafir Yönetimi ve Şikâyetler','Güvenlik, Acil Durum ve Olay Yönetimi','KVKK ve Bilgi Güvenliği','Haşere, Atık ve Çevre Yönetimi','Tesis, Ruhsat, Belge ve Mevzuat Kontrolü','Form, Checklist ve Kayıt Sistemi','Yönetici Raporlama ve Kontrol Sistemi','Günlük Otel Operasyon Döngüsü','Uygulama, Denetim ve Sürekli İyileştirme','Son Kontrol: Otelin Her Gün Çalışır Durumda Olması'];
+const AUD=['Tüm personel','Yöneticiler','Tüm personel','Ön Büro','Housekeeping','F&B, Mutfak','Housekeeping, Ön Büro','Teknik','Satın alma, Mutfak','Ön Büro, Muhasebe','Ön Büro, F&B','Tüm personel','Tüm personel','Teknik, Housekeeping','Yöneticiler','Yöneticiler','Yöneticiler','Yöneticiler','Yöneticiler','Yöneticiler'];
+const TOT=[58,9,58,8,18,16,26,6,7,10,22,58,58,24,9,9,9,9,9,9];
+const SIG=[56,9,51,8,15,12,24,6,7,10,20,52,47,22,9,8,9,7,9,9];
+const DOCS=EK.map((t,i)=>({code:'OSC-EK-'+pad(i+1),t,aud:AUD[i],v:i===12||i===2?'v3':i===4?'v2':'v1',tot:TOT[i],sig:SIG[i]}));
+const FORMS=[['OSC-F-01','Oryantasyon Formu','Yeni personel',3,2],['OSC-F-02','Bilgilendirme Formu','Yeni personel',3,3],['OSC-F-03','Lojman Talimatı','Lojmanda kalanlar',31,27],['OSC-F-04','Otel Genel Kuralları','Tüm personel',58,55],['OSC-F-05','KVKK Aydınlatma ve Açık Rıza','Tüm personel',58,58],['OSC-F-06','İSG Eğitim Katılım Tutanağı','Tüm personel',58,53],['OSC-F-07','Zimmet Teslim Formu','Zimmet alanlar',41,41],['OSC-F-08','Kıyafet ve Hijyen Talimatı','Tüm personel',58,54]].map(([code,t,aud,tot,sig])=>({code,t,aud,v:'v1',tot,sig}));
+let docTab='el';
+function docRows(){const L=docTab==='form'?FORMS:DOCS;$('#docList').innerHTML=L.map((d,i)=>{const p=Math.round(d.sig/d.tot*100);return `<div class="row" data-doc="${i}" tabindex="0"><span class="doc-code">${d.code}</span><div style="min-width:0;flex:1"><div class="t">${d.t}</div><div class="s">${d.aud} · ${d.v}</div></div><div class="end" style="width:120px"><div class="num" style="font-size:.78rem">${d.sig}/${d.tot} ${p===100?'<span class="ico-ok">✓</span>':''}</div><div class="bar${p<90?' brass':''}"><i style="width:${p}%"></i></div></div></div>`}).join('');
+ const all=[...DOCS,...FORMS],s=all.reduce((a,d)=>a+d.sig,0),t=all.reduce((a,d)=>a+d.tot,0),p=Math.round(s/t*1000)/10;
+ $('#donut').setAttribute('stroke-dasharray',`${p} ${100-p}`);$('#sigPct').textContent='%'+String(p).replace('.',',');$('#sigTxt').textContent=`${s} / ${t} imza tamamlandı`;}
+docRows();
+$('#pendingPeople').innerHTML=[['Fatma Demir','Housekeeping · yeni',5],['Zeynep Arslan','F&B Servis · yeni',5],['Deniz Koç','Ön Büro',2],['Gökhan Er','Mutfak',2],['Hasan Öztürk','Housekeeping',2]].map(([n,d,c])=>`<div class="row"><div class="avatar" style="width:28px;height:28px;font-size:.66rem">${ini(n)}</div><div><div class="t">${n}</div><div class="s">${d}</div></div><span class="end pill ${c>3?'bad':'warn'}">${c} belge</span></div>`).join('');
+$('#remindBtn').onclick=()=>toast('6 personele SMS ve uygulama bildirimi gönderildi');
+$('#docTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;docTab=b.dataset.t;$$('#docTabs button').forEach(x=>x.classList.toggle('on',x===b));
+ $('#docMain').hidden=docTab==='matris';$('#matrixPanel').hidden=docTab!=='matris';if(docTab!=='matris')docRows()});
+const MX=[0,2,3,4,11,12],MF=[0,2,3,4];
+$('#matrix').innerHTML=`<tr><th>Personel</th>${MX.map(i=>`<th title="${EK[i]}">EK-${pad(i+1)}</th>`).join('')}${MF.map(i=>`<th title="${FORMS[i].t}">F-${pad(i+1)}</th>`).join('')}</tr>`+STAFF.map(([n,d],r)=>`<tr><td><div class="who"><div class="avatar">${ini(n)}</div>${n}</div></td>${[...MX,...MF.map(x=>x+100)].map((c,k)=>{let st=(r*7+k*3)%11===0?'no':(r*5+k)%13===0?'wait':'ok';if((n==='Fatma Demir'||n==='Zeynep Arslan')&&k%2===0)st='no';
+ if(c===3&&d!=='Ön Büro')return'<td class="muted">–</td>';if(c===4&&d!=='Housekeeping')return'<td class="muted">–</td>';
+ return `<td>${st==='ok'?'<span class="ico-ok" title="İmzalandı">✓</span>':st==='wait'?'<span class="ico-wait" title="Yeni versiyon, tekrar imza bekleniyor">↻</span>':'<span class="ico-no" title="İmzalanmadı">✗</span>'}</td>`}).join('')}</tr>`).join('');
+
+/* İmza modalı */
+let cur=null;const pad2=$('#sigpad'),pc=pad2.getContext('2d');let drawn=false,down=false;
+function openDoc(i,list){const L=list||(docTab==='form'?FORMS:DOCS);cur=L[i]||FORMS[2];$('#mCode').textContent=cur.code;$('#mTitle').textContent=cur.t;
+ $('#mMeta').textContent=`${cur.v} · Yürürlük 01.10.2026 · Hedef: ${cur.aud} · Okuma süresi ~6 dk`;
+ $('#mText').innerHTML=`<p><b>1. Amaç.</b> Bu doküman ${cur.t.toLocaleLowerCase('tr')} kapsamındaki uygulamaların otel genelinde aynı standartta yürütülmesini sağlar.</p><p><b>2. Kapsam.</b> ${cur.aud} için geçerlidir. Sezonluk ve deneme süresindeki personel de kapsama dahildir.</p><p><b>3. Sorumluluklar.</b> Departman müdürü uygulamayı denetler. Personel kurallara uymakla ve aykırılıkları bildirmekle yükümlüdür.</p><p><b>4. Kayıtlar.</b> İlgili form ve checklistler sistemde tutulur, en az 2 yıl saklanır.</p><p class="muted">Örnek metin. Gerçek içerik otel tarafından girilir.</p>`;
+ $('#mRead').checked=false;clearSig();$('#mStamp').hidden=true;$('#modal').hidden=false;sizePad();}
+function sizePad(){const r=pad2.getBoundingClientRect(),dpr=window.devicePixelRatio||1;pad2.width=r.width*dpr;pad2.height=r.height*dpr;pc.scale(dpr,dpr);pc.lineWidth=2.2;pc.lineCap='round';pc.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--ink')}
+function clearSig(){pc.clearRect(0,0,pad2.width,pad2.height);drawn=false;upd()}
+function upd(){$('#sigOk').disabled=!($('#mRead').checked&&drawn)}
+const pos=e=>{const r=pad2.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
+pad2.addEventListener('pointerdown',e=>{down=true;pad2.setPointerCapture(e.pointerId);const[x,y]=pos(e);pc.beginPath();pc.moveTo(x,y)});
+pad2.addEventListener('pointermove',e=>{if(!down)return;const[x,y]=pos(e);pc.lineTo(x,y);pc.stroke();drawn=true});
+pad2.addEventListener('pointerup',()=>{down=false;upd()});
+$('#mRead').onchange=upd;$('#sigClear').onclick=clearSig;$('#mClose').onclick=()=>$('#modal').hidden=true;
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')$('#modal').hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').hidden=true});
+$('#sigOk').onclick=()=>{const d=new Date();if(cur.sig<cur.tot)cur.sig++;docRows();
+ $('#mStamp').hidden=false;$('#mStamp').innerHTML=`<div class="stamp">İMZALANDI · ${cur.code} ${cur.v}<br>${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())} · Cihaz: iPhone · IP 10.0.4.27</div>`;
+ $('#sigOk').disabled=true;toast('İmza kaydedildi, PDF özlük dosyasına eklendi')};
+$('#docList').addEventListener('click',e=>{const r=e.target.closest('[data-doc]');if(r)openDoc(+r.dataset.doc)});
+$('#docList').addEventListener('keydown',e=>{const r=e.target.closest('[data-doc]');if(r&&e.key==='Enter')openDoc(+r.dataset.doc)});
+
+/* Özlük */
+const EVRAK=[['Nüfus cüzdanı fotokopisi','ok'],['Diploma','ok'],['Sağlık raporu (portör)','warn','9 gün kaldı'],['Adli sicil kaydı','ok'],['İkametgâh','ok'],['SGK işe giriş bildirgesi','ok'],['İş sözleşmesi (ıslak imza)','ok'],['KVKK aydınlatma ve açık rıza','ok'],['Banka IBAN bilgisi','ok'],['Hijyen eğitim sertifikası','bad','Süresi doldu']];
+function profile(n){const s=STAFF.find(x=>x[0]===n);const isElif=n==='Elif Karaca';
+ $('#profile').innerHTML=`<header><div class="profile"><div class="avatar">${ini(n)}</div><div><h2>${n}</h2><div class="muted">${s[2]} · ${s[1]}</div></div></div><span class="right"><button class="btn sm">PDF özlük dosyası</button></span></header>
+ <div class="body" style="display:flex;flex-direction:column;gap:16px">
+ <dl class="dl"><div><dt>Sicil no</dt><dd class="mono">OSC-${String(STAFF.indexOf(s)+101).padStart(4,'0')}</dd></div><div><dt>İşe giriş</dt><dd class="mono">${s[3].split('-').reverse().join('.')}</dd></div>
+ <div><dt>T.C. kimlik</dt><dd class="mono">•••••••••42</dd></div><div><dt>SGK durum</dt><dd>Bildirildi</dd></div><div><dt>Lojman</dt><dd>${isElif?'Blok B · Oda 4':'Kalmıyor'}</dd></div><div><dt>Yıllık izin</dt><dd class="mono">14 gün hak · 9 kalan</dd></div></dl>
+ <div><div class="eyebrow">Özlük evrakları · ${EVRAK.filter(e=>e[1]==='ok').length}/${EVRAK.length}</div><div class="checks">${EVRAK.map(([t,st,m])=>{if(!isElif&&st!=='ok'){st='ok';m=''}return `<div class="ci"><span class="${st==='ok'?'ico-ok':st==='warn'?'ico-wait':'ico-no'}">${st==='ok'?'✓':st==='warn'?'!':'✗'}</span>${t}<span class="st">${m?`<span class="pill ${st}">${m}</span>`:'<span class="muted" style="font-size:.74rem">yüklü</span>'}</span></div>`}).join('')}</div></div>
+ <div><div class="eyebrow">Bu ay mesai</div><div class="mono" style="font-size:.84rem">Çalışılan 41 sa 05 dk · Fazla mesai 2 sa 10 dk · Geç giriş 2 kez</div></div></div>`;
+ $$('#staffTable tr[data-n]').forEach(r=>r.style.background=r.dataset.n===n?'var(--accent-soft)':'');}
+$('#staffTable').innerHTML=`<tr><th>Personel</th><th>Departman</th><th>Pozisyon</th><th>Özlük</th></tr>`+STAFF.map(([n,d,p])=>{const st=n==='Elif Karaca'?['bad','2 eksik']:n==='Fatma Demir'||n==='Zeynep Arslan'?['warn','Oryantasyon']:['ok','Tam'];return `<tr data-n="${n}" style="cursor:pointer"><td><div class="who"><div class="avatar">${ini(n)}</div>${n}</div></td><td>${d}</td><td>${p}</td><td><span class="pill ${st[0]}">${st[1]}</span></td></tr>`}).join('');
+$('#staffTable').addEventListener('click',e=>{const r=e.target.closest('tr[data-n]');if(r)profile(r.dataset.n)});
+profile('Elif Karaca');
+
+/* Süreç kanban */
+const KB={giris:[['Aday ve evrak',[['Mert Güneş','Garson · F&B','4/9 evrak'],['Sibel Ak','Kat Görevlisi','7/9 evrak']]],['Sözleşme ve SGK',[['Ali Rıza Tan','Teknisyen','SGK girişi yarın']]],['Oryantasyon',[['Zeynep Arslan','Garson · F&B','Gün 2/3 · Otel turu tamam'],['Fatma Demir','Kat Görevlisi','Gün 3/3 · İSG eğitimi']]],['İmzalar ve lojman',[['Deniz Koç','Resepsiyonist','Lojman talimatı bekliyor']]],['Aktif',[['Can Yılmaz','Barmen','QR hesabı açıldı']]]],
+ cikis:[['Çıkış talebi',[['Gökhan Er','Aşçı','İstifa · 14.10.2026']]],['Zimmet iadesi',[['Hasan Öztürk','Çamaşırhane','Kıyafet 2/3 · kart iade']]],['Lojman teslimi',[]],['İbraname ve SGK çıkış',[]],['Arşiv',[['Ece Tunç','Resepsiyonist','Eylül 2026 · özlük arşivde']]]]};
+const STEPS={giris:['Kimlik, diploma, sağlık raporu','İş sözleşmesi, SGK bildirgesi','3 günlük oryantasyon programı','Kurallar, KVKK, lojman imzası','QR mesai ve vardiya açılır'],cikis:['Dilekçe veya fesih bildirimi','Kıyafet, kart, anahtar, cihaz','Oda kontrolü, eşya listesi','Son ücret, ibraname, SGK çıkışı','Dosya 10 yıl saklanır']};
+function kanban(t){$('#kanban').innerHTML=KB[t].map(([h,cards],i)=>`<div class="col"><h3>${h}<span class="mono muted">${cards.length}</span></h3><div class="muted" style="font-size:.72rem">${STEPS[t][i]}</div>${cards.map(([n,p,s])=>`<div class="card"><div class="who" style="display:flex;gap:8px;align-items:center"><div class="avatar" style="width:24px;height:24px;font-size:.62rem">${ini(n)}</div><b>${n}</b></div><span class="muted">${p}</span><span class="pill ${i===4?'ok':'info'}" style="align-self:flex-start">${s}</span></div>`).join('')||'<div class="muted" style="font-size:.78rem;padding:6px">Bu adımda kimse yok</div>'}</div>`).join('')}
+kanban('giris');
+$('#procTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#procTabs button').forEach(x=>x.classList.toggle('on',x===b));kanban(b.dataset.t)});
+
+/* Lojman */
+$('#lojmanGrid').innerHTML=[['Blok A · Oda 1','4 kişilik',['Kemal Aksoy','Gökhan Er','Can Yılmaz'],'ok','Eylül denetimi: uygun'],['Blok A · Oda 2','4 kişilik',['Burak Şahin','Serkan Uçar','Mehmet Kaya','Murat Çelik'],'ok','Eylül denetimi: uygun'],['Blok B · Oda 4','3 kişilik',['Elif Karaca','Ayşe Yıldız','Fatma Demir'],'warn','Fatma Demir talimatı imzalamadı'],['Blok B · Oda 5','3 kişilik',['Zeynep Arslan'],'warn','2 yatak boş · talimat imzası bekliyor'],['Blok B · Oda 6','2 kişilik',['Deniz Koç','Hasan Öztürk'],'bad','Denetim: sigara kokusu, tutanak tutuldu'],['Blok C · Oda 1','2 kişilik',[],'neutral','Boş · bakımda']].map(([t,c,p,st,n])=>`<div class="panel"><header><h3>${t}</h3><span class="right muted" style="font-size:.75rem">${c}</span></header><div class="body" style="display:flex;flex-direction:column;gap:8px">${p.map(x=>`<div class="who" style="display:flex;gap:8px;align-items:center"><div class="avatar" style="width:24px;height:24px;font-size:.62rem">${ini(x)}</div>${x}</div>`).join('')||'<span class="muted">Kimse kalmıyor</span>'}<span class="pill ${st}" style="align-self:flex-start">${n}</span></div></div>`).join('');
+
+/* Checklist */
+const CL={'Ön Büro · Sabah açılış':[['Kasa devri ve sayım','Selin A. 07:04',1],['Gece raporu kontrolü','Selin A. 07:10',1],['Bugünkü VIP ve grup girişleri','Selin A. 07:20',1],['Lobi ve resepsiyon düzeni','',0],['Anahtar kartı stok sayımı','',0],['Misafir şikâyet defteri kontrolü','',0]],
+ 'Mutfak · HACCP':[['Soğuk oda sıcaklığı 06:00 (°C)','',0],['Derin dondurucu −18 °C altında','Kemal A. 06:05',1],['Mal kabul kontrolü ve etiketleme','Kemal A. 06:40',1],['Personel hijyen kontrolü','Kemal A. 06:10',1],['Yağ değişim kaydı','',0]],
+ 'Housekeeping · Kat 3':[['Koridor ve yangın çıkışı açık','Elif K. 08:15',1],['Kat arabası dolumu','Ayşe Y. 07:20',1],['Kayıp eşya kaydı','',0],['Minibar sayım listesi','Ayşe Y. 08:00',1]],
+ 'Güvenlik · Gece turu':[['Yangın paneli kontrolü','Mehmet K. 00:10',1],['Kamera kayıt kontrolü','Mehmet K. 00:20',1],['Dış kapılar kilit turu 02:00','Mehmet K. 02:05',1],['Jeneratör yakıt seviyesi','Mehmet K. 04:00',1]]};
+let clKey=Object.keys(CL)[0];
+$('#clTabs').innerHTML=Object.keys(CL).map((k,i)=>`<button class="${i?'':'on'}" data-k="${k}">${k}</button>`).join('');
+function renderCL(){const L=CL[clKey];$('#clTitle').textContent=clKey;const d=L.filter(x=>x[2]).length;$('#clPct').textContent=`${d}/${L.length} tamam`;
+ $('#clItems').innerHTML=L.map((x,i)=>`<label class="cl-item${x[2]?' done':''}" for="cl${i}"><input type="checkbox" id="cl${i}" data-i="${i}" ${x[2]?'checked':''}><span class="t">${x[0]}</span><span class="by">${x[1]||'bekliyor'}</span></label>`).join('');
+ $('#clSummary').innerHTML=Object.entries(CL).map(([k,L])=>{const p=Math.round(L.filter(x=>x[2]).length/L.length*100);return `<div class="hbar"><span style="font-size:.78rem">${k.split(' · ')[0]}</span><div class="bar${p<70?' brass':''}"><i style="width:${p}%"></i></div><span class="num">%${p}</span></div>`}).join('')}
+renderCL();
+$('#clTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;clKey=b.dataset.k;$$('#clTabs button').forEach(x=>x.classList.toggle('on',x===b));renderCL()});
+$('#clItems').addEventListener('change',e=>{const i=e.target.dataset.i;const it=CL[clKey][i];it[2]=e.target.checked?1:0;const d=new Date();it[1]=it[2]?`Siz ${pad(d.getHours())}:${pad(d.getMinutes())}`:'';renderCL()});
+
+/* Odalar */
+const ST=['temiz','temiz','temiz','dolu','dolu','kontrol','kirli','temiz','dolu','dolu','temiz','kontrol'];const STL={temiz:'Temiz',kirli:'Kirli',kontrol:'Kontrol bekliyor',ariza:'Arızalı',dolu:'Dolu'};
+const ROOMS={};let fl='';for(let f=5;f>=1;f--){let r='';for(let n=1;n<=24;n++){const no=f*100+n;let s=ST[(f*7+n*5)%ST.length];if(no===412||no===218)s='ariza';ROOMS[no]=s;r+=`<button class="room ${s}" data-r="${no}">${no}</button>`}fl+=`<div class="floor"><span>Kat ${f}</span><div class="rooms">${r}</div></div>`}
+$('#floors').innerHTML=fl;
+function roomDetail(no){const s=ROOMS[no];$$('.room').forEach(b=>b.classList.toggle('sel',b.dataset.r==no));
+ $('#roomDetail').innerHTML=`<header><h2>Oda ${no}</h2><span class="right"><span class="pill ${s==='temiz'?'ok':s==='ariza'?'bad':s==='kirli'?'warn':s==='kontrol'?'info':'neutral'}">${STL[s]}</span></span></header><div class="body" style="display:flex;flex-direction:column;gap:12px">
+ <dl class="dl"><div><dt>Tip</dt><dd>${no%2?'Standart çift':'Deluxe deniz manzara'}</dd></div><div><dt>Kat görevlisi</dt><dd>${no<300?'Fatma Demir':'Ayşe Yıldız'}</dd></div><div><dt>Son temizlik</dt><dd class="mono">06.10 · 09:12</dd></div><div><dt>Son kontrol</dt><dd class="mono">Elif K. · 05.10</dd></div></dl>
+ ${s==='ariza'?`<div class="note" style="background:var(--bad-soft);border-color:var(--bad)"><b>Açık iş emri:</b> ${no===412?'Klima soğutmuyor, kompresör sesi. SLA aşıldı.':'Lavabo gideri tıkalı. Teknisyen yolda.'}</div>`:''}
+ <div class="eyebrow">Son kontrol formu · 25 madde</div><div class="checks"><div class="ci"><span class="ico-ok">✓</span>Yatak ve nevresim<span class="st muted">uygun</span></div><div class="ci"><span class="ico-ok">✓</span>Banyo ve havlu seti<span class="st muted">uygun</span></div><div class="ci"><span class="ico-no">✗</span>Minibar<span class="st"><span class="pill warn">2 su eksik</span></span></div><div class="ci"><span class="ico-ok">✓</span>Klima, TV, aydınlatma<span class="st muted">uygun</span></div></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm primary">Kontrol formu başlat</button><button class="btn sm" data-go="ariza">Arıza bildir</button></div></div>`}
+$('#floors').addEventListener('click',e=>{const b=e.target.closest('.room');if(b)roomDetail(+b.dataset.r)});
+roomDetail(412);
+
+/* Arızalar */
+$('#faultTable').innerHTML=`<tr><th>No</th><th>Konu</th><th>Yer</th><th>Bildiren</th><th>Atanan</th><th>Öncelik</th><th>SLA</th><th>Durum</th></tr>`+[
+ ['İE-2041','Klima soğutmuyor','Oda 412','Ön Büro','Okan Tekin','bad Yüksek','5 sa 20 dk / 4 sa','bad SLA aşıldı'],
+ ['İE-2042','Lavabo gideri tıkalı','Oda 218','Housekeeping','Serkan Uçar','warn Orta','1 sa 10 dk / 8 sa','info Yolda'],
+ ['İE-2039','Bulaşık makinesi su kaçırıyor','Mutfak','Mutfak','Okan Tekin','bad Yüksek','2 sa 05 dk / 4 sa','warn Parça bekliyor'],
+ ['İE-2038','Lobi spot ampulü','Lobi','Güvenlik','Serkan Uçar','info Düşük','—','ok Çözüldü'],
+ ['İE-2036','Havuz pompası periyodik bakım','Havuz','Planlı bakım','Okan Tekin','info Planlı','Bugün 14:00','neutral Planlandı']
+].map(r=>`<tr><td class="mono">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td>${[r[5]].map(x=>`<td><span class="pill ${x.split(' ')[0]}">${x.split(' ').slice(1).join(' ')}</span></td>`).join('')}<td class="mono" style="white-space:nowrap">${r[6]}</td><td><span class="pill ${r[7].split(' ')[0]}">${r[7].split(' ').slice(1).join(' ')}</span></td></tr>`).join('');
+
+/* Şikâyetler */
+$('#complaints').innerHTML=[['bad','Oda 208 · Yan odadan gürültü','Ön Büro · Misafir: B. Kılıç · Telafi: oda değişimi teklif edildi','Açık · 1 sa 05 dk'],['warn','Restoran · Kahvaltıda bekleme süresi','F&B Servis · Google yorumu · 3/5 puan','Geri dönüş bekliyor'],['ok','Oda 115 · Havlu eksikliği','Housekeeping · 10 dk içinde çözüldü, misafir arandı','Kapandı'],['ok','Otopark · Vale gecikmesi','Güvenlik · Özür ve ücretsiz kahve','Kapandı']].map(([s,t,d,e])=>`<div class="row"><span class="sev ${s}"></span><div><div class="t">${t}</div><div class="s">${d}</div></div><span class="end pill ${s}">${e}</span></div>`).join('');
+$('#compCat').innerHTML=[['Gürültü',7],['Temizlik',5],['Yemek / servis',4],['Teknik',4],['Personel tavrı',2],['Fiyat / fatura',1]].map(([k,v])=>`<div class="hbar"><span>${k}</span><div class="bar"><i style="width:${v/7*100}%"></i></div><span class="num">${v}</span></div>`).join('');
+
+/* Eğitim */
+const TR=['İSG temel','Yangın ve tahliye','Hijyen','KVKK','Misafir ilişkileri'];
+$('#trainTable').innerHTML=`<tr><th>Personel</th><th>Departman</th>${TR.map(t=>`<th>${t}</th>`).join('')}<th>Yetkinlik</th></tr>`+STAFF.map(([n,d],r)=>`<tr><td><div class="who"><div class="avatar">${ini(n)}</div>${n}</div></td><td>${d}</td>${TR.map((t,k)=>{const v=(r*3+k*5)%9;let c=v===0?['bad','Yok']:v===1?['warn','Kasım 26']:['ok',['03.26','11.25','01.26','05.26'][v%4]];if((n==='Fatma Demir'||n==='Zeynep Arslan')&&k>1)c=['info','Planlandı'];if(n==='Elif Karaca'&&k===2)c=['bad','Süresi doldu'];return `<td><span class="pill ${c[0]}">${c[1]}</span></td>`}).join('')}<td class="mono">${'●'.repeat(2+(r%4))}${'○'.repeat(3-(r%4))}</td></tr>`).join('');
+
+/* Rapor grafiği */
+(function(){const v=[88,91,86,93,90,79,92],lab=['30.09','01.10','02.10','03.10','04.10','05.10','06.10'];const W=520,H=210,L=36,R=12,T=14,B=28,y0=70,y1=100;
+ const X=i=>L+i*(W-L-R)/(v.length-1),Y=x=>T+(y1-x)/(y1-y0)*(H-T-B);let s='';
+ [70,80,90,100].forEach(g=>s+=`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${Y(g)}" y2="${Y(g)}"/><text x="${L-6}" y="${Y(g)+3}" text-anchor="end">%${g}</text>`);
+ const pts=v.map((x,i)=>`${X(i)},${Y(x)}`).join(' ');
+ s+=`<polygon points="${X(0)},${Y(y0)} ${pts} ${X(v.length-1)},${Y(y0)}" fill="var(--accent)" fill-opacity=".12"/><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.2"/>`;
+ v.forEach((x,i)=>{s+=`<circle cx="${X(i)}" cy="${Y(x)}" r="${i===v.length-1?4.5:2.8}" fill="${x<85?'var(--warn)':'var(--accent)'}"/><text x="${X(i)}" y="${H-8}" text-anchor="middle">${lab[i]}</text>`});
+ s+=`<text x="${X(5)}" y="${Y(79)+16}" text-anchor="middle">%79 · düğün</text><text x="${X(6)-6}" y="${Y(92)-9}" text-anchor="end">%92</text>`;
+ $('#attChart').innerHTML=s})();
+
+/* saat */
+const d0=new Date();$('#clock').textContent=`06.10.2026 · ${pad(d0.getHours())}:${pad(d0.getMinutes())}`;
+go((location.hash||'#panel').slice(1));
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(!$('#v-'+h)?.classList.contains('on'))go(h)});
+})();
+</script>
