@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oscar Seaside Hotel & Spa — Yarım Pansiyon Menüsü</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500&display=swap">
+<style>
+  :root{ --ground:#EEE7D8; --sheet:#FBF8F1; --ink:#1F3D48; --ink-soft:#6E6A5F; --accent:#B08828; --sea:#2C6E74; --line:rgba(31,61,72,.20); --line-soft:rgba(31,61,72,.12); }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(120% 60% at 50% -10%, #F4EFE3 0%, var(--ground) 60%) fixed;color:var(--ink);font-family:'Jost',system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding-block:28px;padding-left:14px;padding-right:14px}
+  .sheet{max-width:940px;margin:0 auto;background:var(--sheet);border:1px solid var(--line-soft);box-shadow:0 18px 50px -22px rgba(31,61,72,.45), 0 2px 0 rgba(255,255,255,.6) inset;padding:clamp(24px,5vw,60px) clamp(18px,5vw,64px) clamp(28px,5vw,54px);position:relative}
+  .sheet::before{content:"";position:absolute;inset:10px;border:1px solid var(--line-soft);pointer-events:none}
+  header{text-align:center;position:relative;z-index:1}
+  .eyebrow{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--sea);font-weight:500;margin:0 0 14px;padding-left:.42em}
+  .hotel{font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--ink);font-size:clamp(28px,6vw,46px);line-height:1.02;margin:0;letter-spacing:.01em;text-wrap:balance}
+  .loc{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-soft);margin:12px 0 0;padding-left:.34em}
+  .divider{display:flex;align-items:center;justify-content:center;gap:16px;margin:22px auto 6px;max-width:340px;color:var(--accent)}
+  .divider::before,.divider::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--accent))}
+  .divider::after{background:linear-gradient(90deg,var(--accent),transparent)}
+  .divider span{font-size:12px;letter-spacing:.3em}
+  .menu-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:clamp(19px,3.4vw,25px);color:var(--sea);text-align:center;margin:2px 0 4px}
+  main{margin-top:clamp(24px,4vw,40px);columns:2;column-gap:clamp(28px,5vw,56px)}
+  @media (max-width:640px){ main{columns:1} }
+  .cat{break-inside:avoid;margin:0 0 26px}
+  .cat h2{font-family:'Jost',sans-serif;font-weight:500;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin:0 0 12px;display:flex;align-items:center;gap:12px}
+  .cat h2::after{content:"";height:1px;flex:1;background:var(--line)}
+  .cat ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
+  .item .nm{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:19px;line-height:1.15;color:var(--ink)}
+  .item .ds{font-size:12px;line-height:1.5;color:var(--ink-soft);font-weight:300;margin-top:2px}
+  .note{border:1px solid var(--accent);background:linear-gradient(180deg,rgba(176,136,40,.08),rgba(176,136,40,.02));border-radius:2px;padding:18px 24px;text-align:center;position:relative;z-index:1;margin-top:clamp(20px,3vw,28px)}
+  .note .lbl{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--sea);font-weight:500;margin:0;padding-left:.32em}
+  .note .incl-list{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:7px 22px}
+  .note .incl-list li{font-family:'Cormorant Garamond',serif;font-size:clamp(16.5px,2.3vw,20px);font-weight:600;color:var(--sea);line-height:1.2;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
+  .note .incl-list li::before{content:"\25C6";color:var(--accent);font-size:7px;vertical-align:middle;margin-right:7px;position:relative;top:-2px}
+  .note .free{margin:11px 0 0;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-weight:400}
+  footer{text-align:center;margin-top:24px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);position:relative;z-index:1}
+  .loading{text-align:center;color:var(--ink-soft);padding:40px}
+  .langs{display:flex;gap:6px;justify-content:center;margin:16px 0 0;position:relative;z-index:1}
+  .langs button{font-family:'Jost',sans-serif;font-size:12px;border:1px solid var(--line);background:var(--sheet);color:var(--ink-soft);border-radius:20px;padding:6px 14px;cursor:pointer;font-weight:600}
+  .langs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header>
+    <p class="eyebrow">Bodrum · Güvercinlik</p>
+    <h1 class="hotel">Oscar Seaside Hotel &amp; Spa</h1>
+    <p class="loc" id="loc">Yarım Pansiyon Misafirlerimize Özel</p>
+    <div class="divider"><span>&#10022;</span></div>
+    <p class="menu-title" id="mtitle">À La Carte Akşam Menüsü</p>
+    <div class="langs" id="langs"><button data-l="tr">TR</button><button data-l="en">EN</button><button data-l="ru">RU</button></div>
+  </header>
+  <div class="note" id="note"></div>
+  <main id="main"><div class="loading">Menü yükleniyor…</div></main>
+  <footer id="footer">Afiyet olsun &#10022; Oscar Seaside Hotel &amp; Spa</footer>
+</div>
+<script>
+  const esc = s => String(s==null?'':s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  let LANG = localStorage.getItem('menuLang') || 'tr';
+  let M = null;
+  const UI = {
+    tr:{ loc:'Yarım Pansiyon Misafirlerimize Özel', title:'À La Carte Akşam Menüsü', lbl:'Yarım Pansiyon Misafirlerimize', footer:'Afiyet olsun ✢ Oscar Seaside Hotel & Spa', load:'Menü yükleniyor…', soon:'Menü yakında.', fail:'Menü yüklenemedi.' },
+    en:{ loc:'Exclusive for Our Half-Board Guests', title:'À La Carte Dinner Menu', lbl:'For Our Half-Board Guests', footer:'Enjoy your meal ✢ Oscar Seaside Hotel & Spa', load:'Loading menu…', soon:'Menu coming soon.', fail:'Failed to load menu.' },
+    ru:{ loc:'Специально для гостей на полупансионе', title:'Ужин à la carte', lbl:'Для гостей на полупансионе', footer:'Приятного аппетита ✢ Oscar Seaside Hotel & Spa', load:'Загрузка меню…', soon:'Меню скоро.', fail:'Не удалось загрузить меню.' }
+  };
+  const INCL = {
+    tr:['1 Ana Yemek','1 Sıcak Başlangıç','2 Soğuk Başlangıç','1 Salata','1 Soft İçecek'],
+    en:['1 Main Course','1 Hot Starter','2 Cold Starters','1 Salad','1 Soft Drink'],
+    ru:['1 основное блюдо','1 горячая закуска','2 холодные закуски','1 салат','1 безалкогольный напиток']
+  };
+  const FREE = { tr:'Çay ve su ücretsizdir · Afiyet olsun', en:'Tea and water are complimentary · Enjoy', ru:'Чай и вода — бесплатно · Приятного аппетита' };
+  const LX = (o,f)=> !o ? '' : (LANG==='tr' ? (o[f]||'') : (o[f+'_'+LANG] || o[f] || ''));
+
+  fetch('/menu/api.php').then(r=>r.json()).then(data=>{ M = data.yp || {categories:[]}; applyLang(); })
+    .catch(()=>{ document.getElementById('main').innerHTML='<div class="loading">'+UI[LANG].fail+'</div>'; });
+
+  function applyLang(){
+    if(!M) return; const t = UI[LANG];
+    document.documentElement.lang = LANG;
+    document.getElementById('loc').textContent = t.loc;
+    document.getElementById('mtitle').textContent = t.title;
+    document.getElementById('footer').textContent = t.footer;
+    const incl = (LANG==='tr' && Array.isArray(M.included) && M.included.length) ? M.included : INCL[LANG];
+    const free = (LANG==='tr' && M.freeLine) ? M.freeLine : FREE[LANG];
+    document.getElementById('note').innerHTML =
+      '<p class="lbl">'+t.lbl+'</p>'
+      + '<ul class="incl-list">' + incl.map(x=>'<li>'+esc(x)+'</li>').join('') + '</ul>'
+      + '<p class="free">'+esc(free)+'</p>';
+    document.querySelectorAll('.langs button').forEach(b=>b.classList.toggle('on', b.dataset.l===LANG));
+    const main = document.getElementById('main'); main.innerHTML='';
+    (M.categories||[]).forEach(c=>{
+      const act=(c.items||[]).filter(it=>it.active!==false);
+      if(!act.length) return;
+      const sec=document.createElement('section'); sec.className='cat';
+      let h='<h2>'+esc(LX(c,'name'))+'</h2><ul>';
+      act.forEach(it=>{ const ds=LX(it,'desc'); h+='<li class="item"><div class="nm">'+esc(LX(it,'name'))+'</div>'+(ds?'<div class="ds">'+esc(ds)+'</div>':'')+'</li>'; });
+      h+='</ul>'; sec.innerHTML=h; main.appendChild(sec);
+    });
+    if(!main.children.length) main.innerHTML='<div class="loading">'+t.soon+'</div>';
+  }
+  document.querySelectorAll('.langs button').forEach(b=>b.addEventListener('click', ()=>{ LANG=b.dataset.l; localStorage.setItem('menuLang',LANG); applyLang(); }));
+</script>
+</body>
+</html>
